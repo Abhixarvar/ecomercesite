@@ -119,3 +119,4 @@ dist/
 client/dist/
 dist-ssr/
 *.local
+node_modules/

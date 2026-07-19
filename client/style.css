@@ -95,7 +95,7 @@ img {
 
 .btn-primary {
     background-color: var(--primary-color);
-    color: var(--bg-white);
+    color: #ffffff;
 }
 
 .btn-primary:hover {
@@ -106,8 +106,8 @@ img {
 
 .btn-secondary {
     background-color: transparent;
-    color: var(--bg-white);
-    border-color: var(--bg-white);
+    color: #ffffff;
+    border-color: #ffffff;
 }
 
 .btn-secondary:hover {
@@ -123,7 +123,7 @@ img {
 
 .btn-outline:hover {
     background-color: var(--primary-color);
-    color: var(--bg-white);
+    color: #ffffff;
 }
 
 /* --- Navigation --- */
@@ -180,7 +180,7 @@ img {
     font-size: 2rem;
     font-weight: 700;
     letter-spacing: 2px;
-    color: var(--bg-white);
+    color: #ffffff;
     transition: var(--transition);
 }
 
@@ -200,7 +200,7 @@ img {
 .nav-links li a {
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--bg-white);
+    color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
@@ -230,7 +230,7 @@ img {
 }
 
 .nav-icons a {
-    color: var(--bg-white);
+    color: #ffffff;
     font-size: 1.5rem;
     position: relative;
 }
@@ -264,7 +264,7 @@ img {
 .nav-mobile-toggle {
     display: none;
     font-size: 1.8rem;
-    color: var(--bg-white);
+    color: #ffffff;
     cursor: pointer;
 }
 
@@ -323,7 +323,7 @@ img {
 .hero-title {
     font-size: 4.5rem;
     line-height: 1.1;
-    color: var(--bg-white);
+    color: #ffffff;
     margin-bottom: 24px;
     animation: fadeInUp 1s ease 0.4s backwards;
 }
@@ -830,7 +830,7 @@ img {
 }
 
 #user-name-display {
-    color: var(--bg-white);
+    color: #ffffff;
     font-size: 0.9rem;
     font-weight: 500;
 }
@@ -838,7 +838,7 @@ img {
 .logout-btn {
     background: none;
     border: none;
-    color: var(--bg-white);
+    color: #ffffff;
     cursor: pointer;
     font-size: 1.2rem;
     display: flex;
