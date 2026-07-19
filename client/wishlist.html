@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aaranya | Premium Indian Wear</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Discover Aaranya's premium collection of Indian ethnic wear. Shop luxurious sarees, lehengas, and kurtas crafted with tradition and elegance.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css">
+    
+    <!-- Google Identity Services -->
+    <script>
+      function handleGoogleLogin(response) {
+        if (window._actualGoogleLogin) {
+          window._actualGoogleLogin(response);
+        } else {
+          console.error("Login handler not ready yet");
+        }
+      }
+    </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar solid" id="navbar">
+        <div class="nav-container">
+            <div class="nav-mobile-toggle" id="mobile-toggle">
+                <i class="ph ph-list"></i>
+            </div>
+            
+            <a href="./index.html" class="nav-brand">
+                <h1>Aaranya</h1>
+                <span>TRADITION REIMAGINED</span>
+            </a>
+            
+            <ul class="nav-links" id="nav-links">
+                <li><a href="./index.html#hero">Home</a></li>
+                <li><a href="./index.html#categories">Sarees</a></li>
+                <li><a href="./index.html#collection">Lehengas</a></li>
+                <li><a href="./index.html#collection">Kurtas</a></li>
+                <li><a href="./index.html#collection">Bridal</a></li>
+            </ul>
+            
+            <div class="nav-icons">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Theme"><i class="ph ph-moon"></i></button>
+                <a href="#" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
+                <a href="./wishlist.html" aria-label="Wishlist"><i class="ph ph-heart"></i></a>
+                <a href="./cart.html" aria-label="Cart" class="cart-icon">
+                    <i class="ph ph-shopping-bag"></i>
+                    <span class="cart-badge">0</span>
+                </a>
+                <a href="#" aria-label="User Login" id="login-btn"><i class="ph ph-user"></i></a>
+                <div id="user-profile" class="user-profile hidden">
+                    <img id="user-avatar" src="" alt="Profile" referrerpolicy="no-referrer">
+                    <span id="user-name-display"></span>
+                    <button id="logout-btn" class="logout-btn"><i class="ph ph-sign-out"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Wishlist Section -->
+    <section class="wishlist-section section" id="wishlist" style="min-height: 60vh; margin-top: 80px;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Wishlist</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div id="wishlist-container" class="product-grid">
+                <!-- Wishlist items will be injected here by JS -->
+                <p>Loading your wishlist...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2>Aaranya</h2>
+                    <p>Elevating traditional Indian ethnic wear with modern sensibilities and uncompromising quality since 1995.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="ph ph-instagram-logo"></i></a>
+                        <a href="#"><i class="ph ph-facebook-logo"></i></a>
+                        <a href="#"><i class="ph ph-pinterest-logo"></i></a>
+                        <a href="#"><i class="ph ph-twitter-logo"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Shop</h3>
+                    <ul>
+                        <li><a href="#">Sarees</a></li>
+                        <li><a href="#">Lehengas</a></li>
+                        <li><a href="#">Kurtas</a></li>
+                        <li><a href="#">Bridal Collection</a></li>
+                        <li><a href="#">Accessories</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Help</h3>
+                    <ul>
+                        <li><a href="#">Track Order</a></li>
+                        <li><a href="#">Returns & Exchanges</a></li>
+                        <li><a href="#">Shipping Info</a></li>
+                        <li><a href="#">Size Guide</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h3>Stay Connected</h3>
+                    <p>Subscribe to our newsletter for exclusive offers and updates on new collections.</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Aaranya Ethnic Wear. All rights reserved.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-modal" id="close-login">&times;</button>
+            <h2>Sign In</h2>
+            <p>Sign in to access your wishlist, orders, and exclusive offers.</p>
+            <div id="g_id_onload"
+                 data-client_id="%VITE_GOOGLE_CLIENT_ID%"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleGoogleLogin"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+    </div>
+
+    <!-- Username Prompt Modal (For new users) -->
+    <div id="username-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Complete Profile</h2>
+            <p>Welcome! Please choose a username to complete your registration.</p>
+            <form id="username-form">
+                <input type="text" id="username-input" placeholder="Choose a username" required minlength="3">
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Complete Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./wishlist.js"></script>
+</body>
+</html>

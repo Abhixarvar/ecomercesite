@@ -112,6 +112,90 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+// Auth Middleware
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) return res.status(401).json({ success: false, message: 'Access denied' });
+  
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ success: false, message: 'Invalid token' });
+    req.user = user;
+    next();
+  });
+}
+
+// 3. Cart Routes
+app.get('/api/user/cart', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({ success: true, cart: user.cart });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/user/cart', authenticateToken, async (req, res) => {
+  try {
+    const product = req.body;
+    await User.findByIdAndUpdate(req.user.id, { $push: { cart: product } });
+    const user = await User.findById(req.user.id);
+    res.json({ success: true, cart: user.cart });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.delete('/api/user/cart/:id', authenticateToken, async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const user = await User.findById(req.user.id);
+    user.cart = user.cart.filter(item => item.id !== productId);
+    await user.save();
+    res.json({ success: true, cart: user.cart });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// 4. Wishlist Routes
+app.get('/api/user/wishlist', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({ success: true, wishlist: user.wishlist });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/user/wishlist', authenticateToken, async (req, res) => {
+  try {
+    const product = req.body;
+    const user = await User.findById(req.user.id);
+    const exists = user.wishlist.some(item => item.id === product.id);
+    if (!exists) {
+      user.wishlist.push(product);
+      await user.save();
+    }
+    res.json({ success: true, wishlist: user.wishlist });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.delete('/api/user/wishlist/:id', authenticateToken, async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const user = await User.findById(req.user.id);
+    user.wishlist = user.wishlist.filter(item => item.id !== productId);
+    await user.save();
+    res.json({ success: true, wishlist: user.wishlist });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

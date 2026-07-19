@@ -20,6 +20,15 @@
     <link rel="stylesheet" href="./style.css">
     
     <!-- Google Identity Services -->
+    <script>
+      function handleGoogleLogin(response) {
+        if (window._actualGoogleLogin) {
+          window._actualGoogleLogin(response);
+        } else {
+          console.error("Login handler not ready yet");
+        }
+      }
+    </script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -45,15 +54,16 @@
             </ul>
             
             <div class="nav-icons">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Theme"><i class="ph ph-moon"></i></button>
                 <a href="#" aria-label="Search"><i class="ph ph-magnifying-glass"></i></a>
-                <a href="#" aria-label="Wishlist"><i class="ph ph-heart"></i></a>
-                <a href="#" aria-label="Cart" class="cart-icon">
+                <a href="./wishlist.html" aria-label="Wishlist"><i class="ph ph-heart"></i></a>
+                <a href="./cart.html" aria-label="Cart" class="cart-icon">
                     <i class="ph ph-shopping-bag"></i>
-                    <span class="cart-badge">2</span>
+                    <span class="cart-badge">0</span>
                 </a>
                 <a href="#" aria-label="User Login" id="login-btn"><i class="ph ph-user"></i></a>
                 <div id="user-profile" class="user-profile hidden">
-                    <img id="user-avatar" src="" alt="Profile">
+                    <img id="user-avatar" src="" alt="Profile" referrerpolicy="no-referrer">
                     <span id="user-name-display"></span>
                     <button id="logout-btn" class="logout-btn"><i class="ph ph-sign-out"></i></button>
                 </div>
@@ -139,11 +149,11 @@
                     <div class="product-image-wrapper">
                         <img src="./assets/images/product1.png" alt="Emerald Green Silk Saree" class="product-image">
                         <div class="product-actions">
-                            <button class="action-btn" title="Add to Wishlist" id="wishlist-btn-1"><i class="ph ph-heart"></i></button>
+                            <button class="action-btn wishlist-btn" title="Add to Wishlist" id="wishlist-btn-1" data-id="p1" data-title="Emerald Green Silk Saree with Gold Border" data-price="18500" data-image="./assets/images/product1.png" data-category="Silk Saree"><i class="ph ph-heart"></i></button>
                             <button class="action-btn" title="Quick View"><i class="ph ph-eye"></i></button>
                         </div>
                         <div class="product-badge badge-new">New</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <button class="add-to-cart-btn" data-id="p1" data-title="Emerald Green Silk Saree with Gold Border" data-price="18500" data-image="./assets/images/product1.png" data-category="Silk Saree">Add to Cart</button>
                     </div>
                     <div class="product-info">
                         <span class="product-category">Silk Saree</span>
@@ -157,10 +167,10 @@
                     <div class="product-image-wrapper">
                         <img src="./assets/images/product3.png" alt="Pastel Pink Bridal Lehenga" class="product-image">
                         <div class="product-actions">
-                            <button class="action-btn" title="Add to Wishlist" id="wishlist-btn-2"><i class="ph ph-heart"></i></button>
+                            <button class="action-btn wishlist-btn" title="Add to Wishlist" id="wishlist-btn-2" data-id="p2" data-title="Pastel Pink Embroidered Floral Lehenga" data-price="45000" data-image="./assets/images/product3.png" data-category="Bridal Wear"><i class="ph ph-heart"></i></button>
                             <button class="action-btn" title="Quick View"><i class="ph ph-eye"></i></button>
                         </div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <button class="add-to-cart-btn" data-id="p2" data-title="Pastel Pink Embroidered Floral Lehenga" data-price="45000" data-image="./assets/images/product3.png" data-category="Bridal Wear">Add to Cart</button>
                     </div>
                     <div class="product-info">
                         <span class="product-category">Bridal Wear</span>
@@ -174,11 +184,11 @@
                     <div class="product-image-wrapper">
                         <img src="./assets/images/product2.png" alt="Royal Blue Kurta Set" class="product-image">
                         <div class="product-actions">
-                            <button class="action-btn" title="Add to Wishlist" id="wishlist-btn-3"><i class="ph ph-heart"></i></button>
+                            <button class="action-btn wishlist-btn" title="Add to Wishlist" id="wishlist-btn-3" data-id="p3" data-title="Royal Blue Silk Kurta Pajama Set" data-price="12999" data-image="./assets/images/product2.png" data-category="Men's Ethnic"><i class="ph ph-heart"></i></button>
                             <button class="action-btn" title="Quick View"><i class="ph ph-eye"></i></button>
                         </div>
                         <div class="product-badge badge-bestseller">Bestseller</div>
-                        <button class="add-to-cart-btn">Add to Cart</button>
+                        <button class="add-to-cart-btn" data-id="p3" data-title="Royal Blue Silk Kurta Pajama Set" data-price="12999" data-image="./assets/images/product2.png" data-category="Men's Ethnic">Add to Cart</button>
                     </div>
                     <div class="product-info">
                         <span class="product-category">Men's Ethnic</span>
@@ -258,7 +268,7 @@
             <h2>Sign In</h2>
             <p>Sign in to access your wishlist, orders, and exclusive offers.</p>
             <div id="g_id_onload"
-                 data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE"
+                 data-client_id="%VITE_GOOGLE_CLIENT_ID%"
                  data-context="signin"
                  data-ux_mode="popup"
                  data-callback="handleGoogleLogin"
