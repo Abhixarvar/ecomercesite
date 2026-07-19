@@ -99,9 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Wishlist & Cart Interaction ---
-    const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
-    const wishlistBtns = document.querySelectorAll('.wishlist-btn');
-
     async function handleAddAction(btn, endpoint, successText) {
         const token = localStorage.getItem('authToken');
         if (!token) {
@@ -149,25 +146,80 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.style.backgroundColor = '';
                     btn.style.color = '';
                 }, 2000);
+            } else {
+                alert(data.message || 'Action failed');
             }
         } catch (error) {
             console.error('Error adding product:', error);
         }
     }
 
-    addToCartBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleAddAction(btn, '/api/user/cart', 'Added!');
+    function attachProductListeners() {
+        const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+        const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+        
+        addToCartBtns.forEach(btn => {
+            if (!btn.disabled) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleAddAction(btn, '/api/user/cart', 'Added!');
+                });
+            }
         });
-    });
-    
-    wishlistBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleAddAction(btn, '/api/user/wishlist', '<i class="ph-fill ph-heart"></i>');
+        
+        wishlistBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleAddAction(btn, '/api/user/wishlist', '<i class="ph-fill ph-heart"></i>');
+            });
         });
-    });
+    }
+
+    async function loadProducts() {
+        const dynamicProducts = document.getElementById('dynamic-products');
+        if (!dynamicProducts) return; // Only on index.html
+
+        try {
+            const res = await fetch(`${API_BASE}/api/products`);
+            const data = await res.json();
+            
+            if (data.success && data.products.length > 0) {
+                dynamicProducts.innerHTML = '';
+                data.products.forEach(p => {
+                    const outOfStock = p.stock <= 0;
+                    dynamicProducts.innerHTML += `
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <img src="${p.image}" alt="${p.title}" class="product-image">
+                                <div class="product-actions">
+                                    <button class="action-btn wishlist-btn" title="Add to Wishlist" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
+                                </div>
+                                ${outOfStock ? '<div class="product-badge badge-new" style="background:#d9534f">Out of Stock</div>' : ''}
+                                <button class="add-to-cart-btn" ${outOfStock ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''} data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}">${outOfStock ? 'Out of Stock' : 'Add to Cart'}</button>
+                            </div>
+                            <div class="product-info">
+                                <span class="product-category">${p.category}</span>
+                                <h3 class="product-title">${p.title}</h3>
+                                <div class="product-price">₹${p.price.toLocaleString()}</div>
+                                <div class="product-stock" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Stock: ${p.stock}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                attachProductListeners();
+            } else {
+                dynamicProducts.innerHTML = '<p style="grid-column:1/-1; text-align:center;">No products available at the moment.</p>';
+            }
+        } catch (error) {
+            console.error('Error loading products:', error);
+            dynamicProducts.innerHTML = '<p style="grid-column:1/-1; text-align:center;">Error loading products.</p>';
+        }
+    }
+
+    // Initialize
+    attachProductListeners();
+    loadProducts();
 
     // --- Authentication & Modals ---
     const loginBtn = document.getElementById('login-btn');

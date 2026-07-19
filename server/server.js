@@ -5,6 +5,7 @@ const cors = require('cors');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
+const Product = require('./models/Product');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -139,6 +140,18 @@ app.get('/api/user/cart', authenticateToken, async (req, res) => {
 app.post('/api/user/cart', authenticateToken, async (req, res) => {
   try {
     const product = req.body;
+    
+    // Check and update stock
+    const productDb = await Product.findById(product.id);
+    if (!productDb) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    if (productDb.stock <= 0) {
+      return res.status(400).json({ success: false, message: 'Out of stock' });
+    }
+    productDb.stock -= 1;
+    await productDb.save();
+
     await User.findByIdAndUpdate(req.user.id, { $push: { cart: product } });
     const user = await User.findById(req.user.id);
     res.json({ success: true, cart: user.cart });
@@ -151,8 +164,22 @@ app.delete('/api/user/cart/:id', authenticateToken, async (req, res) => {
   try {
     const productId = req.params.id;
     const user = await User.findById(req.user.id);
-    user.cart = user.cart.filter(item => item.id !== productId);
-    await user.save();
+    
+    // Find how many instances of this product we are removing
+    const removedCount = user.cart.filter(item => item.id === productId).length;
+    
+    if (removedCount > 0) {
+      user.cart = user.cart.filter(item => item.id !== productId);
+      await user.save();
+      
+      // Increment stock back
+      const productDb = await Product.findById(productId);
+      if (productDb) {
+        productDb.stock += removedCount;
+        await productDb.save();
+      }
+    }
+    
     res.json({ success: true, cart: user.cart });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -191,6 +218,48 @@ app.delete('/api/user/wishlist/:id', authenticateToken, async (req, res) => {
     user.wishlist = user.wishlist.filter(item => item.id !== productId);
     await user.save();
     res.json({ success: true, wishlist: user.wishlist });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// 6. Admin / Product Routes
+app.get('/api/products', async (req, res) => {
+  try {
+    let products = await Product.find({});
+    // Shuffle array randomly
+    products = products.sort(() => 0.5 - Math.random());
+    res.json({ success: true, products });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/products', async (req, res) => {
+  // Simplistic auth check can be added here if desired. 
+  // For now, protecting via frontend passcode logic as requested.
+  try {
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    res.json({ success: true, product: newProduct });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+});
+
+app.put('/api/products/:id', async (req, res) => {
+  try {
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json({ success: true, product: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
