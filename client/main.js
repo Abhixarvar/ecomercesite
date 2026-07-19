@@ -218,22 +218,28 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthStatus();
 
     // Modal toggles
-    loginBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        loginModal.classList.remove('hidden');
-    });
+    if (loginBtn && loginModal) {
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginModal.classList.remove('hidden');
+        });
+    }
 
-    closeLoginBtn.addEventListener('click', () => {
-        loginModal.classList.add('hidden');
-    });
+    if (closeLoginBtn && loginModal) {
+        closeLoginBtn.addEventListener('click', () => {
+            loginModal.classList.add('hidden');
+        });
+    }
 
     // Logout
-    logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('authUser');
-        checkAuthStatus();
-        alert('You have been logged out.');
-    });
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+            checkAuthStatus();
+            alert('You have been logged out.');
+        });
+    }
 
     // Global callback for Google Sign-In
     window._actualGoogleLogin = async (response) => {
@@ -275,43 +281,45 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Handle Username Submission
-    usernameForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username-input').value;
-        
-        if (!tempGoogleData) return alert('Session expired, please try logging in again.');
-        
-        showLoader('Registering...');
-        try {
-            const res = await fetch(`${API_BASE}/api/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    googleId: tempGoogleData.googleId,
-                    email: tempGoogleData.email,
-                    picture: tempGoogleData.picture,
-                    username: username
-                })
-            });
+    if (usernameForm) {
+        usernameForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username-input').value;
             
-            const data = await res.json();
-            hideLoader();
+            if (!tempGoogleData) return alert('Session expired, please try logging in again.');
             
-            if (data.success) {
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('authUser', JSON.stringify(data.user));
-                checkAuthStatus();
-                usernameModal.classList.add('hidden');
-                tempGoogleData = null;
-                alert('Welcome to Archi Fashion, ' + data.user.username + '!');
-            } else {
-                alert(data.message || 'Registration failed.');
+            showLoader('Registering...');
+            try {
+                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        googleId: tempGoogleData.googleId,
+                        email: tempGoogleData.email,
+                        picture: tempGoogleData.picture,
+                        username: username
+                    })
+                });
+                
+                const data = await res.json();
+                hideLoader();
+                
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('authUser', JSON.stringify(data.user));
+                    checkAuthStatus();
+                    usernameModal.classList.add('hidden');
+                    tempGoogleData = null;
+                    alert('Welcome to Archi Fashion, ' + data.user.username + '!');
+                } else {
+                    alert(data.message || 'Registration failed.');
+                }
+            } catch (error) {
+                hideLoader();
+                console.error('Registration Error:', error);
+                alert('A network error occurred.');
             }
-        } catch (error) {
-            hideLoader();
-            console.error('Registration Error:', error);
-            alert('A network error occurred.');
-        }
-    });
+        });
+    }
 
 });
