@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const cartContainer = document.getElementById('cart-container');
 const cartSummary = document.getElementById('cart-summary');
 const cartTotal = document.getElementById('cart-total');
@@ -14,7 +16,7 @@ async function fetchCart() {
     }
 
     try {
-        const res = await fetch('/api/user/cart', {
+        const res = await fetch(`${API_BASE}/api/user/cart`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -65,7 +67,7 @@ function renderCart(cartItems) {
             const id = btn.dataset.id;
             const token = localStorage.getItem('authToken');
             try {
-                const res = await fetch(`/api/user/cart/${id}`, {
+                const res = await fetch(`${API_BASE}/api/user/cart/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });

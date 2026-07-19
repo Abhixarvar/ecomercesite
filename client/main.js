@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Theme Toggle ---
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const res = await fetch(endpoint, {
+            const res = await fetch(API_BASE + endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -171,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (user.picture) userAvatar.src = user.picture;
             
             try {
-                const response = await fetch('/api/user/cart', {
+                const response = await fetch(`${API_BASE}/api/user/cart`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -217,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             // Send token to backend
-            const res = await fetch('http://localhost:5000/api/auth/google', {
+            const res = await fetch(`${API_BASE}/api/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token })
@@ -255,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tempGoogleData) return alert('Session expired, please try logging in again.');
         
         try {
-            const res = await fetch('http://localhost:5000/api/auth/register', {
+            const res = await fetch(`${API_BASE}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

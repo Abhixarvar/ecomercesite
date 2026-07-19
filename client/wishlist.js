@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 const wishlistContainer = document.getElementById('wishlist-container');
 
 async function fetchWishlist() {
@@ -12,7 +14,7 @@ async function fetchWishlist() {
     }
 
     try {
-        const res = await fetch('/api/user/wishlist', {
+        const res = await fetch(`${API_BASE}/api/user/wishlist`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -63,7 +65,7 @@ function renderWishlist(items) {
             const id = btn.dataset.id;
             const token = localStorage.getItem('authToken');
             try {
-                const res = await fetch(`/api/user/wishlist/${id}`, {
+                const res = await fetch(`${API_BASE}/api/user/wishlist/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -92,7 +94,7 @@ function renderWishlist(items) {
 
             try {
                 // Add to cart
-                const resCart = await fetch('/api/user/cart', {
+                const resCart = await fetch(`${API_BASE}/api/user/cart`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify(product)
@@ -104,7 +106,7 @@ function renderWishlist(items) {
                     if (cartBadge) cartBadge.innerText = cartData.cart.length;
                     
                     // Remove from wishlist
-                    const resWish = await fetch(`/api/user/wishlist/${product.id}`, {
+                    const resWish = await fetch(`${API_BASE}/api/user/wishlist/${product.id}`, {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
