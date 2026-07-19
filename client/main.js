@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const input = newsletterForm.querySelector('input');
             if (input.value) {
-                alert('Thank you for subscribing to Aaranya! You will receive our latest updates soon.');
+                alert('Thank you for subscribing to Archi Fashion! You will receive our latest updates soon.');
                 input.value = '';
             }
         });
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkAuthStatus();
                 usernameModal.classList.add('hidden');
                 tempGoogleData = null;
-                alert('Welcome to Aaranya, ' + data.user.username + '!');
+                alert('Welcome to Archi Fashion, ' + data.user.username + '!');
             } else {
                 alert(data.message || 'Registration failed.');
             }
