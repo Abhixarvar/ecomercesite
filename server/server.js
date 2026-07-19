@@ -196,6 +196,42 @@ app.delete('/api/user/wishlist/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// 5. Orders Routes
+app.get('/api/user/orders', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({ success: true, orders: user.orders });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/user/checkout', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (user.cart.length === 0) {
+      return res.status(400).json({ success: false, message: 'Cart is empty' });
+    }
+    
+    // Create a new order object
+    const newOrder = {
+      orderId: 'ORD-' + Math.floor(Math.random() * 1000000),
+      date: new Date(),
+      items: user.cart,
+      total: user.cart.reduce((sum, item) => sum + (parseFloat(item.price.toString().replace(/[^0-9.-]+/g,"")) || 0), 0)
+    };
+    
+    user.orders.unshift(newOrder);
+    user.cart = [];
+    await user.save();
+    
+    res.json({ success: true, orders: user.orders, cart: user.cart });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error during checkout' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
