@@ -1,6 +1,28 @@
 import { API_BASE } from './config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Global Loader ---
+    const loaderOverlay = document.createElement('div');
+    loaderOverlay.id = 'global-loader';
+    loaderOverlay.className = 'modal hidden';
+    loaderOverlay.style.zIndex = '9999'; // Ensure it's above everything
+    loaderOverlay.innerHTML = `
+        <div class="loader-content">
+            <div class="elegant-spinner"></div>
+            <p class="loader-text" id="loader-text-display">Authenticating...</p>
+        </div>
+    `;
+    document.body.appendChild(loaderOverlay);
+
+    const showLoader = (text = 'Authenticating...') => {
+        document.getElementById('loader-text-display').innerText = text;
+        loaderOverlay.classList.remove('hidden');
+    };
+
+    const hideLoader = () => {
+        loaderOverlay.classList.add('hidden');
+    };
+
     // --- Theme Toggle ---
     const themeToggleBtn = document.getElementById('theme-toggle');
     if (themeToggleBtn) {
@@ -215,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Global callback for Google Sign-In
     window._actualGoogleLogin = async (response) => {
+        showLoader('Authenticating...');
         const token = response.credential;
         
         try {
@@ -226,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             const data = await res.json();
+            hideLoader();
             
             if (data.success) {
                 if (data.isNewUser) {
@@ -244,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Authentication failed. Please try again.');
             }
         } catch (error) {
+            hideLoader();
             console.error('Error during Google login:', error);
             alert('A network error occurred. Please try again later.');
         }
@@ -256,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!tempGoogleData) return alert('Session expired, please try logging in again.');
         
+        showLoader('Registering...');
         try {
             const res = await fetch(`${API_BASE}/api/auth/register`, {
                 method: 'POST',
@@ -269,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             const data = await res.json();
+            hideLoader();
             
             if (data.success) {
                 localStorage.setItem('authToken', data.token);
@@ -281,6 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.message || 'Registration failed.');
             }
         } catch (error) {
+            hideLoader();
             console.error('Registration Error:', error);
             alert('A network error occurred.');
         }
