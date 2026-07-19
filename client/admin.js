@@ -3,20 +3,46 @@ import { API_BASE } from './config.js';
 document.addEventListener('DOMContentLoaded', () => {
     const authOverlay = document.getElementById('auth-overlay');
     const adminDashboard = document.getElementById('admin-dashboard');
-    const loginBtn = document.getElementById('admin-login-btn');
-    const passInput = document.getElementById('admin-password');
-    const errorMsg = document.getElementById('admin-error');
+    const authTitle = document.getElementById('auth-title');
+    const authMessage = document.getElementById('auth-message');
+    const authReturnBtn = document.getElementById('auth-return-btn');
 
-    // Simple passcode check (Hardcoded for now as requested)
-    loginBtn.addEventListener('click', () => {
-        if (passInput.value === 'admin123') {
-            authOverlay.style.display = 'none';
-            adminDashboard.classList.remove('hidden');
-            loadProducts();
-        } else {
-            errorMsg.style.display = 'block';
+    async function checkAdminAuth() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showAccessDenied("You are not logged in. Please log in on the store page first.");
+            return;
         }
-    });
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/verify-admin`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                // Access granted
+                authOverlay.style.display = 'none';
+                adminDashboard.classList.remove('hidden');
+                loadProducts();
+            } else {
+                showAccessDenied("Access Denied: You do not have administrator privileges.");
+            }
+        } catch (err) {
+            console.error(err);
+            showAccessDenied("Network error occurred. Please try again.");
+        }
+    }
+
+    function showAccessDenied(message) {
+        authTitle.innerText = "Access Denied";
+        authTitle.style.color = "#d9534f";
+        authMessage.innerText = message;
+        authReturnBtn.style.display = "inline-block";
+    }
+
+    // Run auth check on load
+    checkAdminAuth();
 
     const form = document.getElementById('add-product-form');
     const tbody = document.getElementById('products-tbody');
@@ -72,9 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
+            const token = localStorage.getItem('authToken');
             const res = await fetch(`${API_BASE}/api/products`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(newProduct)
             });
             const data = await res.json();
@@ -92,8 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Delete Product
     async function deleteProduct(id) {
         try {
+            const token = localStorage.getItem('authToken');
             const res = await fetch(`${API_BASE}/api/products/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
             if (data.success) {

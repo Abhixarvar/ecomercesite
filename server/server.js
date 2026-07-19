@@ -113,6 +113,10 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+app.get('/api/auth/verify-admin', authenticateAdmin, (req, res) => {
+  res.json({ success: true, message: 'Admin verified' });
+});
+
 // Auth Middleware
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -124,6 +128,21 @@ function authenticateToken(req, res, next) {
     if (err) return res.status(403).json({ success: false, message: 'Invalid token' });
     req.user = user;
     next();
+  });
+}
+
+function authenticateAdmin(req, res, next) {
+  authenticateToken(req, res, async () => {
+    try {
+      const dbUser = await User.findById(req.user.id);
+      if (dbUser && dbUser.email === process.env.ADMIN_EMAIL) {
+        next();
+      } else {
+        res.status(403).json({ success: false, message: 'Not authorized as admin' });
+      }
+    } catch (err) {
+      res.status(500).json({ success: false, message: 'Server error during admin verification' });
+    }
   });
 }
 
@@ -235,9 +254,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-app.post('/api/products', async (req, res) => {
-  // Simplistic auth check can be added here if desired. 
-  // For now, protecting via frontend passcode logic as requested.
+app.post('/api/products', authenticateAdmin, async (req, res) => {
   try {
     const newProduct = new Product(req.body);
     await newProduct.save();
@@ -247,7 +264,7 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
-app.put('/api/products/:id', async (req, res) => {
+app.put('/api/products/:id', authenticateAdmin, async (req, res) => {
   try {
     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json({ success: true, product: updated });
@@ -256,7 +273,7 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', authenticateAdmin, async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Deleted' });

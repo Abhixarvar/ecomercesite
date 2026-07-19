@@ -41,10 +41,9 @@
     <!-- Auth Overlay -->
     <div id="auth-overlay">
         <div class="auth-box">
-            <h2 style="margin-bottom:20px; font-family:var(--font-heading)">Admin Access</h2>
-            <input type="password" id="admin-password" placeholder="Enter Passcode">
-            <button id="admin-login-btn">Enter</button>
-            <p id="admin-error" style="color:red; margin-top:10px; display:none;">Incorrect passcode</p>
+            <h2 id="auth-title" style="margin-bottom:20px; font-family:var(--font-heading)">Verifying Access...</h2>
+            <p id="auth-message" style="margin-bottom:20px; color:var(--text-muted);">Please wait while we check your credentials.</p>
+            <a href="./index.html" id="auth-return-btn" style="display:none; padding: 10px 20px; background: var(--primary-color); color: white; border-radius: 4px; text-decoration: none;">Return to Store</a>
         </div>
     </div>
 
