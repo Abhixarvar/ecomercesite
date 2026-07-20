@@ -89,23 +89,25 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const newProduct = {
-            title: document.getElementById('p-title').value,
-            category: document.getElementById('p-category').value,
-            price: Number(document.getElementById('p-price').value),
-            stock: Number(document.getElementById('p-stock').value),
-            image: document.getElementById('p-image').value
-        };
+        const formData = new FormData();
+        formData.append('title', document.getElementById('p-title').value);
+        formData.append('category', document.getElementById('p-category').value);
+        formData.append('price', document.getElementById('p-price').value);
+        formData.append('stock', document.getElementById('p-stock').value);
+        
+        const imageFile = document.getElementById('p-image').files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
 
         try {
             const token = localStorage.getItem('authToken');
             const res = await fetch(`${API_BASE}/api/products`, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(newProduct)
+                body: formData
             });
             const data = await res.json();
             if (data.success) {

@@ -6,6 +6,10 @@ const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Product = require('./models/Product');
+const multer = require('multer');
+const sharp = require('sharp');
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -254,12 +258,30 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-app.post('/api/products', authenticateAdmin, async (req, res) => {
+app.post('/api/products', authenticateAdmin, upload.single('image'), async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
+    let imageBase64 = '';
+    if (req.file) {
+      const compressedBuffer = await sharp(req.file.buffer)
+        .resize({ width: 800, withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+      
+      imageBase64 = `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+    }
+
+    const newProduct = new Product({
+      title: req.body.title,
+      category: req.body.category,
+      price: Number(req.body.price),
+      stock: Number(req.body.stock),
+      image: imageBase64
+    });
+
     await newProduct.save();
     res.json({ success: true, product: newProduct });
   } catch (err) {
+    console.error('Error adding product:', err);
     res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }
 });
