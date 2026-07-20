@@ -135,7 +135,7 @@ function authenticateAdmin(req, res, next) {
   authenticateToken(req, res, async () => {
     try {
       const dbUser = await User.findById(req.user.id);
-      if (dbUser && dbUser.email === process.env.ADMIN_EMAIL) {
+      if (dbUser && dbUser.email === 'abhisarvarshney141204@gmail.com') {
         next();
       } else {
         res.status(403).json({ success: false, message: 'Not authorized as admin' });
