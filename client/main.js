@@ -1,11 +1,11 @@
-import { API_BASE } from './config.js';
+import { fetchApi } from './api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Global Loader ---
     const loaderOverlay = document.createElement('div');
     loaderOverlay.id = 'global-loader';
     loaderOverlay.className = 'modal hidden';
-    loaderOverlay.style.zIndex = '9999'; // Ensure it's above everything
+    loaderOverlay.style.zIndex = '9999';
     loaderOverlay.innerHTML = `
         <div class="loader-content">
             <div class="elegant-spinner"></div>
@@ -14,12 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(loaderOverlay);
 
-    const showLoader = (text = 'Authenticating...') => {
+    window.showLoader = (text = 'Authenticating...') => {
         document.getElementById('loader-text-display').innerText = text;
         loaderOverlay.classList.remove('hidden');
     };
 
-    const hideLoader = () => {
+    window.hideLoader = () => {
         loaderOverlay.classList.add('hidden');
     };
 
@@ -83,8 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
-
     // --- Newsletter Form ---
     const newsletterForm = document.getElementById('newsletter-form');
     if (newsletterForm) {
@@ -129,17 +127,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = true;
 
         try {
-            const res = await fetch(API_BASE + endpoint, {
+            const data = await fetchApi(endpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(product)
+                body: JSON.stringify(product),
+                hideLoader: true
             });
-            const data = await res.json();
             
-            if (data.success) {
+            if (data && data.success) {
                 if (endpoint === '/api/user/cart') {
                     if (!window.globalCartIds.includes(productId)) {
                         window.globalCartIds.push(productId);
@@ -179,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                                 badge.innerText = 'Out of Stock';
                                                 imgWrapper.appendChild(badge);
                                             }
-                                        }, 2000); // Trigger after the "Added!" message disappears
+                                        }, 2000);
                                     }
                                 }
                             }
@@ -194,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.color = 'white';
                 
                 if (endpoint === '/api/user/cart' && !isOutOfStock) {
-                    btn.disabled = false; // Enable it so next click redirects
+                    btn.disabled = false;
                 } else if (!isOutOfStock) {
                     setTimeout(() => {
                         btn.innerHTML = originalText;
@@ -206,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                alert(data.message || 'Action failed');
+                alert(data?.message || 'Action failed');
             }
         } catch (error) {
             btn.innerHTML = originalText;
@@ -238,13 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadProducts() {
         const dynamicProducts = document.getElementById('dynamic-products');
-        if (!dynamicProducts) return; // Only on index.html
+        if (!dynamicProducts) return;
 
         try {
-            const res = await fetch(`${API_BASE}/api/products`);
-            const data = await res.json();
+            const data = await fetchApi('/api/products');
             
-            if (data.success && data.products.length > 0) {
+            if (data && data.success && data.products.length > 0) {
                 dynamicProducts.innerHTML = '';
                 data.products.forEach(p => {
                     const outOfStock = p.stock <= 0;
@@ -293,33 +286,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const userNameDisplay = document.getElementById('user-name-display');
     const logoutBtn = document.getElementById('logout-btn');
 
-    let tempGoogleData = null; // Store temp data during registration
+    let tempGoogleData = null;
 
-    // Check if user is already logged in on page load
     const checkAuthStatus = async () => {
         const token = localStorage.getItem('authToken');
         const userStr = localStorage.getItem('authUser');
         
         if (token && userStr) {
             const user = JSON.parse(userStr);
-            loginBtn.classList.add('hidden');
-            userProfile.classList.remove('hidden');
-            userNameDisplay.innerText = user.username;
-            if (user.picture) userAvatar.src = user.picture;
+            if (loginBtn) loginBtn.classList.add('hidden');
+            if (userProfile) userProfile.classList.remove('hidden');
+            if (userNameDisplay) userNameDisplay.innerText = user.username;
+            if (user.picture && userAvatar) userAvatar.src = user.picture;
             
             try {
-                const response = await fetch(`${API_BASE}/api/user/cart`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (data.success) {
+                const data = await fetchApi('/api/user/cart', { hideLoader: true });
+                if (data && data.success) {
                     const cartBadge = document.querySelector('.cart-badge');
                     if (cartBadge) {
                         cartBadge.innerText = data.cart.length;
                     }
                     window.globalCartIds = data.cart.map(item => item.id);
                     
-                    // Optional: update buttons on the screen if they are already in the cart
                     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
                         if (window.globalCartIds.includes(btn.dataset.id)) {
                             btn.innerHTML = 'Added to Cart';
@@ -332,15 +320,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(err);
             }
         } else {
-            loginBtn.classList.remove('hidden');
-            userProfile.classList.add('hidden');
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (userProfile) userProfile.classList.add('hidden');
             const cartBadge = document.querySelector('.cart-badge');
             if (cartBadge) cartBadge.innerText = '0';
         }
     };
     checkAuthStatus();
 
-    // Modal toggles
     if (loginBtn && loginModal) {
         loginBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -354,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Logout
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             localStorage.removeItem('authToken');
@@ -364,30 +350,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Global callback for Google Sign-In
     window._actualGoogleLogin = async (response) => {
-        showLoader('Authenticating...');
         const token = response.credential;
         
         try {
-            // Send token to backend
-            const res = await fetch(`${API_BASE}/api/auth/google`, {
+            const data = await fetchApi('/api/auth/google', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token })
+                body: JSON.stringify({ token }),
+                loaderText: 'Authenticating...'
             });
             
-            const data = await res.json();
-            hideLoader();
-            
-            if (data.success) {
+            if (data && data.success) {
                 if (data.isNewUser) {
-                    // New user: hide login modal, show username prompt
                     loginModal.classList.add('hidden');
                     usernameModal.classList.remove('hidden');
                     tempGoogleData = data.googleData;
                 } else {
-                    // Existing user: save token, update UI, close modal
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('authUser', JSON.stringify(data.user));
                     checkAuthStatus();
@@ -397,13 +375,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Authentication failed. Please try again.');
             }
         } catch (error) {
-            hideLoader();
             console.error('Error during Google login:', error);
             alert('A network error occurred. Please try again later.');
         }
     };
 
-    // Handle Username Submission
     if (usernameForm) {
         usernameForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -411,23 +387,19 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!tempGoogleData) return alert('Session expired, please try logging in again.');
             
-            showLoader('Registering...');
             try {
-                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                const data = await fetchApi('/api/auth/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         googleId: tempGoogleData.googleId,
                         email: tempGoogleData.email,
                         picture: tempGoogleData.picture,
                         username: username
-                    })
+                    }),
+                    loaderText: 'Registering...'
                 });
                 
-                const data = await res.json();
-                hideLoader();
-                
-                if (data.success) {
+                if (data && data.success) {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('authUser', JSON.stringify(data.user));
                     checkAuthStatus();
@@ -435,10 +407,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     tempGoogleData = null;
                     alert('Welcome to Archi Fashion, ' + data.user.username + '!');
                 } else {
-                    alert(data.message || 'Registration failed.');
+                    alert(data?.message || 'Registration failed.');
                 }
             } catch (error) {
-                hideLoader();
                 console.error('Registration Error:', error);
                 alert('A network error occurred.');
             }

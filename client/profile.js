@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { fetchApi } from './api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
@@ -62,22 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
     handleHash(); // Run on load
     window.addEventListener('hashchange', handleHash);
 
-    // Load functions
-    async function fetchApi(endpoint) {
-        if (window.showLoader) window.showLoader('Loading...');
-        try {
-            const res = await fetch(API_BASE + endpoint, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            return await res.json();
-        } catch (e) {
-            console.error(e);
-            return null;
-        } finally {
-            if (window.hideLoader) window.hideLoader();
-        }
-    }
-
     async function loadOrders() {
         const data = await fetchApi('/api/user/orders');
         const container = document.getElementById('orders-list');
@@ -131,12 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.remove-wishlist-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.target.dataset.id;
-                if(window.showLoader) window.showLoader('Removing...');
-                await fetch(`${API_BASE}/api/user/wishlist/${id}`, {
+                await fetchApi(`/api/user/wishlist/${id}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    loaderText: 'Removing...'
                 });
-                if(window.hideLoader) window.hideLoader();
                 loadWishlist();
             });
         });
@@ -187,12 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.remove-cart-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                if(window.showLoader) window.showLoader('Removing...');
-                await fetch(`${API_BASE}/api/user/cart/${id}`, {
+                await fetchApi(`/api/user/cart/${id}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    loaderText: 'Removing...'
                 });
-                if(window.hideLoader) window.hideLoader();
                 
                 // Update badge globally
                 const badge = document.querySelector('.cart-badge');
@@ -212,25 +192,18 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please fill out both your Delivery Address and Phone Number.');
             return;
         }
-
-        if(window.showLoader) window.showLoader('Processing payment...');
         
         try {
-            const res = await fetch(`${API_BASE}/api/user/checkout`, {
+            const data = await fetchApi('/api/user/checkout', {
                 method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify({
                     address: addressField.value.trim(),
                     phone: phoneField.value.trim()
-                })
+                }),
+                loaderText: 'Processing payment...'
             });
-            const data = await res.json();
-            if(window.hideLoader) window.hideLoader();
             
-            if (data.success) {
+            if (data && data.success) {
                 const badge = document.querySelector('.cart-badge');
                 if (badge) badge.innerText = '0';
                 
@@ -245,10 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Checkout successful! Your items are now in your Orders.');
                 }, 100);
             } else {
-                alert(data.message || 'Checkout failed.');
+                alert(data?.message || 'Checkout failed.');
             }
         } catch (e) {
-            if(window.hideLoader) window.hideLoader();
             console.error(e);
             alert('A network error occurred.');
         }

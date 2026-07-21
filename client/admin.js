@@ -1,4 +1,4 @@
-import { API_BASE } from './config.js';
+import { fetchApi } from './api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const authOverlay = document.getElementById('auth-overlay');
@@ -15,12 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const res = await fetch(`${API_BASE}/api/auth/verify-admin`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
+            const data = await fetchApi('/api/auth/verify-admin', { hideLoader: true });
             
-            if (data.success) {
+            if (data && data.success) {
                 // Access granted
                 authOverlay.style.display = 'none';
                 adminDashboard.classList.remove('hidden');
@@ -73,10 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load Products
     async function loadProducts() {
         try {
-            const res = await fetch(`${API_BASE}/api/products`);
-            const data = await res.json();
+            const data = await fetchApi('/api/products', { hideLoader: true });
             
-            if (data.success) {
+            if (data && data.success) {
                 tbody.innerHTML = '';
                 data.products.forEach(p => {
                     const tr = document.createElement('tr');
@@ -110,14 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load Orders
     async function loadOrders() {
-        const token = localStorage.getItem('authToken');
         try {
-            const res = await fetch(`${API_BASE}/api/admin/orders`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
+            const data = await fetchApi('/api/admin/orders', { hideLoader: true });
             
-            if (data.success) {
+            if (data && data.success) {
                 ordersTbody.innerHTML = '';
                 if (data.orders.length === 0) {
                     ordersTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders found.</td></tr>';
@@ -168,20 +160,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const token = localStorage.getItem('authToken');
-            const res = await fetch(`${API_BASE}/api/products`, {
+            const data = await fetchApi('/api/products', {
                 method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
+                body: formData,
+                loaderText: 'Adding Product...'
             });
-            const data = await res.json();
-            if (data.success) {
+            
+            if (data && data.success) {
                 form.reset();
                 loadProducts();
             } else {
-                alert('Failed to add product');
+                alert(data?.message || 'Failed to add product');
             }
         } catch (err) {
             console.error('Error adding product', err);
@@ -191,16 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Delete Product
     async function deleteProduct(id) {
         try {
-            const token = localStorage.getItem('authToken');
-            const res = await fetch(`${API_BASE}/api/products/${id}`, {
+            const data = await fetchApi(`/api/products/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                loaderText: 'Deleting Product...'
             });
-            const data = await res.json();
-            if (data.success) {
+            
+            if (data && data.success) {
                 loadProducts();
             } else {
-                alert('Failed to delete product');
+                alert(data?.message || 'Failed to delete product');
             }
         } catch (err) {
             console.error('Error deleting product', err);
