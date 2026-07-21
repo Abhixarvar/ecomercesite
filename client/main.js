@@ -98,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    window.globalCartIds = [];
+    
     // --- Wishlist & Cart Interaction ---
     async function handleAddAction(btn, endpoint, successText) {
         const token = localStorage.getItem('authToken');
@@ -106,13 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const productId = btn.dataset.id;
+        
+        // If it's a cart action and already added, redirect to cart page
+        if (endpoint === '/api/user/cart' && window.globalCartIds.includes(productId)) {
+            window.location.href = './profile.html#cart';
+            return;
+        }
+
         const product = {
-            id: btn.dataset.id,
+            id: productId,
             title: btn.dataset.title,
             price: btn.dataset.price,
             image: btn.dataset.image,
             category: btn.dataset.category
         };
+
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Loading...';
+        btn.disabled = true;
 
         try {
             const res = await fetch(API_BASE + endpoint, {
@@ -127,6 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.success) {
                 if (endpoint === '/api/user/cart') {
+                    if (!window.globalCartIds.includes(productId)) {
+                        window.globalCartIds.push(productId);
+                    }
+                    
                     const cartBadge = document.querySelector('.cart-badge');
                     if (cartBadge) {
                         cartBadge.innerText = data.cart.length;
@@ -169,20 +187,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                const originalText = btn.innerHTML;
+                const isOutOfStock = btn.innerText === 'Out of Stock' || btn.innerHTML === 'Out of Stock';
+                
                 btn.innerHTML = successText;
                 btn.style.backgroundColor = 'var(--accent-color)';
                 btn.style.color = 'white';
                 
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.backgroundColor = '';
-                    btn.style.color = '';
-                }, 2000);
+                if (endpoint === '/api/user/cart' && !isOutOfStock) {
+                    btn.disabled = false; // Enable it so next click redirects
+                } else if (!isOutOfStock) {
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.backgroundColor = '';
+                        btn.style.color = '';
+                        btn.disabled = false;
+                    }, 2000);
+                }
             } else {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
                 alert(data.message || 'Action failed');
             }
         } catch (error) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
             console.error('Error adding product:', error);
         }
     }
@@ -195,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!btn.disabled) {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    handleAddAction(btn, '/api/user/cart', 'Added!');
+                    handleAddAction(btn, '/api/user/cart', 'Added to Cart');
                 });
             }
         });
@@ -289,6 +317,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (cartBadge) {
                         cartBadge.innerText = data.cart.length;
                     }
+                    window.globalCartIds = data.cart.map(item => item.id);
+                    
+                    // Optional: update buttons on the screen if they are already in the cart
+                    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                        if (window.globalCartIds.includes(btn.dataset.id)) {
+                            btn.innerHTML = 'Added to Cart';
+                            btn.style.backgroundColor = 'var(--accent-color)';
+                            btn.style.color = 'white';
+                        }
+                    });
                 }
             } catch (err) {
                 console.error(err);
