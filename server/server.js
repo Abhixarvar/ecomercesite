@@ -259,6 +259,29 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
+app.get('/api/admin/orders', authenticateAdmin, async (req, res) => {
+  try {
+    const users = await User.find({});
+    let allOrders = [];
+    users.forEach(user => {
+      user.orders.forEach(order => {
+        allOrders.push({
+          ...order,
+          customerName: user.username,
+          customerEmail: user.email
+        });
+      });
+    });
+    
+    // Sort by date descending (newest first)
+    allOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    res.json({ success: true, orders: allOrders });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 app.post('/api/products', authenticateAdmin, upload.single('image'), async (req, res) => {
   try {
     let imageBase64 = '';
@@ -317,6 +340,12 @@ app.get('/api/user/orders', authenticateToken, async (req, res) => {
 
 app.post('/api/user/checkout', authenticateToken, async (req, res) => {
   try {
+    const { address, phone } = req.body;
+    
+    if (!address || !phone) {
+      return res.status(400).json({ success: false, message: 'Address and Phone number are required' });
+    }
+
     const user = await User.findById(req.user.id);
     if (user.cart.length === 0) {
       return res.status(400).json({ success: false, message: 'Cart is empty' });
@@ -327,7 +356,9 @@ app.post('/api/user/checkout', authenticateToken, async (req, res) => {
       orderId: 'ORD-' + Math.floor(Math.random() * 1000000),
       date: new Date(),
       items: user.cart,
-      total: user.cart.reduce((sum, item) => sum + (parseFloat(item.price.toString().replace(/[^0-9.-]+/g,"")) || 0), 0)
+      total: user.cart.reduce((sum, item) => sum + (parseFloat(item.price.toString().replace(/[^0-9.-]+/g,"")) || 0), 0),
+      address: address,
+      phone: phone
     };
     
     user.orders.unshift(newOrder);

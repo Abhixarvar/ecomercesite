@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 authOverlay.style.display = 'none';
                 adminDashboard.classList.remove('hidden');
                 loadProducts();
+                loadOrders();
             } else {
                 showAccessDenied("Access Denied: You do not have administrator privileges.");
             }
@@ -46,6 +47,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const form = document.getElementById('add-product-form');
     const tbody = document.getElementById('products-tbody');
+    const ordersTbody = document.getElementById('orders-tbody');
+
+    // Tab Logic
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active classes
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.color = 'var(--text-muted)';
+            });
+            tabContents.forEach(c => c.style.display = 'none');
+            
+            // Add active class
+            btn.classList.add('active');
+            btn.style.color = 'var(--primary-color)';
+            const targetId = btn.getAttribute('data-target');
+            document.getElementById(targetId).style.display = 'block';
+        });
+    });
 
     // Load Products
     async function loadProducts() {
@@ -82,6 +105,50 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Failed to load products', err);
+        }
+    }
+
+    // Load Orders
+    async function loadOrders() {
+        const token = localStorage.getItem('authToken');
+        try {
+            const res = await fetch(`${API_BASE}/api/admin/orders`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                ordersTbody.innerHTML = '';
+                if (data.orders.length === 0) {
+                    ordersTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders found.</td></tr>';
+                    return;
+                }
+                
+                data.orders.forEach(order => {
+                    const tr = document.createElement('tr');
+                    
+                    let itemsHtml = order.items.map(item => `<div>${item.title} (₹${item.price})</div>`).join('');
+                    let dateStr = new Date(order.date).toLocaleString();
+                    
+                    tr.innerHTML = `
+                        <td>${order.orderId}</td>
+                        <td>
+                            <strong>${order.customerName}</strong><br>
+                            <span style="font-size:0.85rem; color:var(--text-muted);">${order.customerEmail}</span>
+                        </td>
+                        <td>
+                            ${order.address || 'N/A'}<br>
+                            <strong>Phone:</strong> ${order.phone || 'N/A'}
+                        </td>
+                        <td>${itemsHtml}</td>
+                        <td>₹${order.total.toLocaleString()}</td>
+                        <td>${dateStr}</td>
+                    `;
+                    ordersTbody.appendChild(tr);
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load orders', err);
         }
     }
 

@@ -205,12 +205,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Checkout Logic
     document.getElementById('checkout-btn').addEventListener('click', async () => {
+        const addressField = document.getElementById('checkout-address');
+        const phoneField = document.getElementById('checkout-phone');
+        
+        if (!addressField.value.trim() || !phoneField.value.trim()) {
+            alert('Please fill out both your Delivery Address and Phone Number.');
+            return;
+        }
+
         if(window.showLoader) window.showLoader('Processing payment...');
         
         try {
             const res = await fetch(`${API_BASE}/api/user/checkout`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    address: addressField.value.trim(),
+                    phone: phoneField.value.trim()
+                })
             });
             const data = await res.json();
             if(window.hideLoader) window.hideLoader();
@@ -218,6 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 const badge = document.querySelector('.cart-badge');
                 if (badge) badge.innerText = '0';
+                
+                addressField.value = '';
+                phoneField.value = '';
                 
                 // Trigger hash change to switch to orders
                 window.location.hash = '#orders';

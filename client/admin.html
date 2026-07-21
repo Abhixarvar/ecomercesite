@@ -53,55 +53,83 @@
             <a href="./index.html" class="back-link"><i class="ph ph-arrow-left"></i> Back to Store</a>
         </div>
 
-        <h3>Add New Product</h3>
-        <form id="add-product-form" style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="form-group">
-                <label>Product Title</label>
-                <input type="text" id="p-title" required placeholder="e.g. Red Silk Saree">
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="p-category" required>
-                    <option value="Sarees">Sarees</option>
-                    <option value="Lehengas">Lehengas</option>
-                    <option value="Menswear">Menswear</option>
-                    <option value="Bridal Wear">Bridal Wear</option>
-                    <option value="Kurtas">Kurtas</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Price (₹)</label>
-                <input type="number" id="p-price" required min="0" placeholder="e.g. 15000">
-            </div>
-            <div class="form-group">
-                <label>Stock Quantity</label>
-                <input type="number" id="p-stock" required min="0" placeholder="e.g. 10">
-            </div>
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label>Image Upload</label>
-                <input type="file" id="p-image" accept="image/*" required>
-            </div>
-            <div style="grid-column: 1 / -1;">
-                <button type="submit" class="add-btn">Add Product</button>
-            </div>
-        </form>
+        <div class="admin-tabs" style="display: flex; gap: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; padding-bottom: 10px;">
+            <button class="tab-btn active" data-target="products-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--primary-color);">Manage Products</button>
+            <button class="tab-btn" data-target="orders-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--text-muted);">New Orders</button>
+        </div>
 
-        <h3 style="margin-top: 50px;">Current Stock</h3>
-        <table class="products-table">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="products-tbody">
-                <!-- Dynamically populated -->
-            </tbody>
-        </table>
+        <!-- Products Tab -->
+        <div id="products-tab" class="tab-content">
+            <h3>Add New Product</h3>
+            <form id="add-product-form" style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Product Title</label>
+                    <input type="text" id="p-title" required placeholder="e.g. Red Silk Saree">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="p-category" required>
+                        <option value="Sarees">Sarees</option>
+                        <option value="Lehengas">Lehengas</option>
+                        <option value="Menswear">Menswear</option>
+                        <option value="Bridal Wear">Bridal Wear</option>
+                        <option value="Kurtas">Kurtas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" id="p-price" required min="0" placeholder="e.g. 15000">
+                </div>
+                <div class="form-group">
+                    <label>Stock Quantity</label>
+                    <input type="number" id="p-stock" required min="0" placeholder="e.g. 10">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Image Upload</label>
+                    <input type="file" id="p-image" accept="image/*" required>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="add-btn">Add Product</button>
+                </div>
+            </form>
+
+            <h3 style="margin-top: 50px;">Current Stock</h3>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="products-tbody">
+                    <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="orders-tab" class="tab-content hidden" style="display: none;">
+            <h3>New Orders</h3>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Delivery Details</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                    <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script type="module" src="./admin.js"></script>
