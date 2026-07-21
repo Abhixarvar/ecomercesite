@@ -1,4 +1,6 @@
 import { fetchApi } from './api.js';
+import Toastify from 'toastify-js';
+import "toastify-js/src/toastify.css";
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- Global Loader ---
@@ -274,6 +276,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize
     attachProductListeners();
     loadProducts();
+    
+    // Check for active announcement
+    async function checkAnnouncement() {
+        try {
+            const data = await fetchApi('/api/announcements/active', { hideLoader: true });
+            if (data && data.success && data.announcement) {
+                Toastify({
+                    text: data.announcement.message,
+                    duration: -1, // Do not auto-close
+                    close: true,
+                    gravity: "top",
+                    position: "center",
+                    style: {
+                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                        marginTop: "70px",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                        fontFamily: "var(--font-heading)",
+                        fontSize: "1.1rem",
+                        padding: "15px 30px"
+                    },
+                    stopOnFocus: true
+                }).showToast();
+            }
+        } catch (error) {
+            console.error('Error fetching announcement:', error);
+        }
+    }
+    
+    checkAnnouncement();
 
     // --- Authentication & Modals ---
     const loginBtn = document.getElementById('login-btn');

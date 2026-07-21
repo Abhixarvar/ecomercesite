@@ -56,6 +56,7 @@
         <div class="admin-tabs" style="display: flex; gap: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; padding-bottom: 10px;">
             <button class="tab-btn active" data-target="products-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--primary-color);">Manage Products</button>
             <button class="tab-btn" data-target="orders-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--text-muted);">New Orders</button>
+            <button class="tab-btn" data-target="announcements-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--text-muted);">Announcements</button>
         </div>
 
         <!-- Products Tab -->
@@ -126,6 +127,35 @@
                     </tr>
                 </thead>
                 <tbody id="orders-tbody">
+                    <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Announcements Tab -->
+        <div id="announcements-tab" class="tab-content hidden" style="display: none;">
+            <h3>Create Announcement / Offer</h3>
+            <form id="add-announcement-form" style="margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>Announcement Message</label>
+                    <input type="text" id="a-message" required placeholder="e.g. 20% OFF on all Sarees this Diwali!">
+                </div>
+                <div>
+                    <button type="submit" class="add-btn">Post Announcement</button>
+                </div>
+            </form>
+
+            <h3 style="margin-top: 50px;">Past Announcements</h3>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Date Posted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="announcements-tbody">
                     <!-- Dynamically populated -->
                 </tbody>
             </table>

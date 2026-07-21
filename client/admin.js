@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 adminDashboard.classList.remove('hidden');
                 loadProducts();
                 loadOrders();
+                loadAnnouncements();
             } else {
                 showAccessDenied("Access Denied: You do not have administrator privileges.");
             }
@@ -43,8 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAdminAuth();
 
     const form = document.getElementById('add-product-form');
+    const announcementForm = document.getElementById('add-announcement-form');
     const tbody = document.getElementById('products-tbody');
     const ordersTbody = document.getElementById('orders-tbody');
+    const announcementsTbody = document.getElementById('announcements-tbody');
 
     // Tab Logic
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -192,6 +195,109 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Error deleting product', err);
+        }
+    }
+
+    // Load Announcements
+    async function loadAnnouncements() {
+        try {
+            const data = await fetchApi('/api/announcements', { hideLoader: true });
+            
+            if (data && data.success) {
+                announcementsTbody.innerHTML = '';
+                if (data.announcements.length === 0) {
+                    announcementsTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No announcements found.</td></tr>';
+                    return;
+                }
+                
+                data.announcements.forEach(a => {
+                    const tr = document.createElement('tr');
+                    
+                    let statusBadge = a.isActive ? 
+                        '<span style="background:var(--accent-color); color:white; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Active</span>' : 
+                        '<span style="background:#ccc; color:white; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Inactive</span>';
+                        
+                    tr.innerHTML = `
+                        <td>${a.message}</td>
+                        <td>${statusBadge}</td>
+                        <td>${new Date(a.createdAt).toLocaleString()}</td>
+                        <td>
+                            <button class="toggle-announcement-btn" data-id="${a._id}" style="background:none; border:none; color:var(--primary-color); cursor:pointer; margin-right:10px;" title="Toggle Active">
+                                <i class="ph ph-power"></i>
+                            </button>
+                            <button class="delete-announcement-btn" data-id="${a._id}"><i class="ph ph-trash"></i></button>
+                        </td>
+                    `;
+                    announcementsTbody.appendChild(tr);
+                });
+
+                document.querySelectorAll('.toggle-announcement-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        await toggleAnnouncement(id);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-announcement-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        if (confirm('Are you sure you want to delete this announcement?')) {
+                            await deleteAnnouncement(id);
+                        }
+                    });
+                });
+            }
+        } catch (err) {
+            console.error('Failed to load announcements', err);
+        }
+    }
+
+    // Add Announcement
+    if (announcementForm) {
+        announcementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('a-message').value;
+
+            try {
+                const data = await fetchApi('/api/announcements', {
+                    method: 'POST',
+                    body: JSON.stringify({ message }),
+                    loaderText: 'Posting Announcement...'
+                });
+                
+                if (data && data.success) {
+                    announcementForm.reset();
+                    loadAnnouncements();
+                } else {
+                    alert(data?.message || 'Failed to post announcement');
+                }
+            } catch (err) {
+                console.error('Error posting announcement', err);
+            }
+        });
+    }
+
+    async function toggleAnnouncement(id) {
+        try {
+            const data = await fetchApi(`/api/announcements/${id}/toggle`, {
+                method: 'PUT',
+                loaderText: 'Toggling...'
+            });
+            if (data && data.success) loadAnnouncements();
+        } catch (err) {
+            console.error('Error toggling', err);
+        }
+    }
+    
+    async function deleteAnnouncement(id) {
+        try {
+            const data = await fetchApi(`/api/announcements/${id}`, {
+                method: 'DELETE',
+                loaderText: 'Deleting...'
+            });
+            if (data && data.success) loadAnnouncements();
+        } catch (err) {
+            console.error('Error deleting', err);
         }
     }
 });
