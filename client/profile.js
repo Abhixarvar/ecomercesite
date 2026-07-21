@@ -142,6 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let currentCartData = [];
+    
     async function loadCart() {
         const data = await fetchApi('/api/user/cart');
         const container = document.getElementById('cart-items');
@@ -150,10 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('cart-subtotal').innerText = '$0.00';
             document.getElementById('cart-total').innerText = '$0.00';
             document.getElementById('checkout-btn').disabled = true;
+            const whatsappBtn = document.getElementById('whatsapp-share-btn');
+            if (whatsappBtn) whatsappBtn.disabled = true;
             return;
         }
 
         document.getElementById('checkout-btn').disabled = false;
+        const whatsappBtn = document.getElementById('whatsapp-share-btn');
+        if (whatsappBtn) whatsappBtn.disabled = false;
+        
+        currentCartData = data.cart;
         
         let total = 0;
         container.innerHTML = data.cart.map(item => {
@@ -227,4 +235,30 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('A network error occurred.');
         }
     });
+    
+    // WhatsApp Share Logic
+    const whatsappBtn = document.getElementById('whatsapp-share-btn');
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', () => {
+            if (currentCartData.length === 0) {
+                alert('Your cart is empty.');
+                return;
+            }
+            
+            let message = "Hello Archi Fashion, I would like to order:\n\n";
+            let total = 0;
+            
+            currentCartData.forEach((item, index) => {
+                message += `${index + 1}. ${item.title} - ${item.price}\n`;
+                const priceNum = parseFloat(item.price.replace(/[^0-9.-]+/g,"")) || 0;
+                total += priceNum;
+            });
+            
+            message += `\nTotal: $${total.toFixed(2)}`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/918920530771?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    }
 });

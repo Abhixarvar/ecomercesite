@@ -126,13 +126,46 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             
             if (data.success) {
-                // Update badge if cart
                 if (endpoint === '/api/user/cart') {
                     const cartBadge = document.querySelector('.cart-badge');
                     if (cartBadge) {
                         cartBadge.innerText = data.cart.length;
                         cartBadge.style.transform = 'scale(1.5)';
                         setTimeout(() => cartBadge.style.transform = 'scale(1)', 200);
+                    }
+                    
+                    // Update stock UI instantly
+                    const productCard = btn.closest('.product-card');
+                    if (productCard) {
+                        const stockEl = productCard.querySelector('.product-stock');
+                        if (stockEl) {
+                            const match = stockEl.innerText.match(/Stock:\s*(\d+)/);
+                            if (match) {
+                                let currentStock = parseInt(match[1]);
+                                if (currentStock > 0) {
+                                    currentStock -= 1;
+                                    stockEl.innerText = `Stock: ${currentStock}`;
+                                    
+                                    if (currentStock === 0) {
+                                        setTimeout(() => {
+                                            btn.disabled = true;
+                                            btn.style.background = '#ccc';
+                                            btn.style.cursor = 'not-allowed';
+                                            btn.innerHTML = 'Out of Stock';
+                                            
+                                            const imgWrapper = productCard.querySelector('.product-image-wrapper');
+                                            if (imgWrapper && !imgWrapper.querySelector('.badge-new')) {
+                                                const badge = document.createElement('div');
+                                                badge.className = 'product-badge badge-new';
+                                                badge.style.background = '#d9534f';
+                                                badge.innerText = 'Out of Stock';
+                                                imgWrapper.appendChild(badge);
+                                            }
+                                        }, 2000); // Trigger after the "Added!" message disappears
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
