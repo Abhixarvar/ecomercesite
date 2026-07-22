@@ -2,6 +2,31 @@ import { fetchApi } from './api.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const authOverlay = document.getElementById('auth-overlay');
+
+    // --- Theme Toggle ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (themeToggleBtn) {
+        const themeIcon = themeToggleBtn.querySelector('i');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeIcon.classList.replace('ph-moon', 'ph-sun');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.replace('ph-sun', 'ph-moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.replace('ph-moon', 'ph-sun');
+            }
+        });
+    }
     const adminDashboard = document.getElementById('admin-dashboard');
     const authTitle = document.getElementById('auth-title');
     const authMessage = document.getElementById('auth-message');
