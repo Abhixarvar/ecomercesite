@@ -289,7 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     gravity: "top",
                     position: "center",
                     style: {
-                        background: "linear-gradient(to right, #00b09b, #96c93d)",
+                        background: "var(--primary-color)",
+                        color: "white",
                         marginTop: "70px",
                         borderRadius: "8px",
                         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
