@@ -1021,3 +1021,106 @@ img {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
+
+/* --- Page Transitions --- */
+body.page-transitioning {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+body {
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+/* --- Scroll Animations --- */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    will-change: opacity, transform;
+}
+
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Skeleton Loaders --- */
+.skeleton-card {
+    background-color: var(--bg-white);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+.skeleton-image {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: #e0e0e0;
+    animation: shimmer 1.5s infinite linear;
+}
+.skeleton-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.skeleton-text {
+    height: 12px;
+    background: #e0e0e0;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    animation: shimmer 1.5s infinite linear;
+    width: 80%;
+}
+.skeleton-text.short {
+    width: 40%;
+}
+.skeleton-text.medium {
+    width: 60%;
+}
+
+@keyframes shimmer {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+[data-theme="dark"] .skeleton-image, [data-theme="dark"] .skeleton-text {
+    background: #2c2c2c;
+}
+
+/* --- Micro-interactions (Enhancements) --- */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+    opacity: 0;
+}
+.btn:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+    transition: 0s;
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.cart-badge.pop {
+    animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}

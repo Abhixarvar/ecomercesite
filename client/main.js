@@ -98,6 +98,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Intersection Observer for Scroll Animations ---
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                // observer.unobserve(entry.target); // keep observing if we want it to hide/show, but usually we just animate once.
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    // Expose globally so other scripts can use it
+    window.observeElements = () => {
+        document.querySelectorAll('.animate-on-scroll:not(.observed)').forEach(el => {
+            el.classList.add('observed');
+            observer.observe(el);
+        });
+    };
+    
+    // Initial call
+    window.observeElements();
+
+    // --- Page Transitions ---
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
+        
+        const href = anchor.getAttribute('href');
+        if (href && !href.startsWith('#') && !href.startsWith('http') && anchor.target !== '_blank') {
+            e.preventDefault();
+            document.body.classList.add('page-transitioning');
+            setTimeout(() => {
+                window.location.href = anchor.href;
+            }, 300);
+        }
+    });
+
     window.globalCartIds = [];
     
     // --- Wishlist & Cart Interaction ---
@@ -144,8 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const cartBadge = document.querySelector('.cart-badge');
                     if (cartBadge) {
                         cartBadge.innerText = data.cart.length;
-                        cartBadge.style.transform = 'scale(1.5)';
-                        setTimeout(() => cartBadge.style.transform = 'scale(1)', 200);
+                        cartBadge.classList.add('pop');
+                        setTimeout(() => cartBadge.classList.remove('pop'), 300);
                     }
                     
                     // Update stock UI instantly
@@ -236,6 +272,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const dynamicProducts = document.getElementById('dynamic-products');
         if (!dynamicProducts) return;
 
+        // Add skeleton loaders
+        let skeletons = '';
+        for (let i = 0; i < 6; i++) {
+            skeletons += `
+                <div class="skeleton-card">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text medium"></div>
+                        <div class="skeleton-text short"></div>
+                    </div>
+                </div>
+            `;
+        }
+        dynamicProducts.innerHTML = skeletons;
+
         try {
             const data = await fetchApi('/api/products');
             
@@ -264,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 attachProductListeners();
+                window.observeElements(); // Re-observe new elements
             } else {
                 dynamicProducts.innerHTML = '<p style="grid-column:1/-1; text-align:center;">No products available at the moment.</p>';
             }
