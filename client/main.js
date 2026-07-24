@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loaderOverlay.innerHTML = `
         <div class="loader-content">
             <div class="elegant-spinner"></div>
-            <p class="loader-text" id="loader-text-display">Authenticating...</p>
+            <p class="loader-text" id="loader-text-display">Namaste! Please stand by and wait...</p>
         </div>
     `;
     document.body.appendChild(loaderOverlay);
 
-    window.showLoader = (text = 'Authenticating...') => {
+    window.showLoader = (text = 'Namaste! Please stand by and wait...') => {
         document.getElementById('loader-text-display').innerText = text;
         loaderOverlay.classList.remove('hidden');
     };
