@@ -68,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
         authTitle.style.color = "#d9534f";
         authMessage.innerText = message;
         authReturnBtn.style.display = "inline-block";
+        const authSpinner = document.getElementById('auth-spinner');
+        if (authSpinner) authSpinner.style.display = 'none';
     }
 
     // Run auth check on load

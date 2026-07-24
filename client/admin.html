@@ -40,7 +40,8 @@
 
     <!-- Auth Overlay -->
     <div id="auth-overlay">
-        <div class="auth-box">
+        <div class="auth-box" style="display: flex; flex-direction: column; align-items: center;">
+            <div id="auth-spinner" class="elegant-spinner" style="border-color: var(--border-color); border-top-color: var(--secondary-color); border-right-color: var(--secondary-color);"></div>
             <h2 id="auth-title" style="margin-bottom:20px; font-family:var(--font-heading)">Namaste!</h2>
             <p id="auth-message" style="margin-bottom:20px; color:var(--text-muted);">Please stand by and wait...</p>
             <a href="./index.html" id="auth-return-btn" style="display:none; padding: 10px 20px; background: var(--primary-color); color: white; border-radius: 4px; text-decoration: none;">Return to Store</a>
