@@ -48,7 +48,7 @@
     </div>
 
     <div class="admin-container hidden" id="admin-dashboard">
-        <div class="admin-header animate-on-scroll">
+        <div class="admin-header">
             <h1>Archi Fashion Admin</h1>
             <div style="display: flex; gap: 20px; align-items: center;">
                 <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Theme" style="font-size: 1.5rem; margin-right: 0;"><i class="ph ph-moon"></i></button>
@@ -56,14 +56,14 @@
             </div>
         </div>
 
-        <div class="admin-tabs animate-on-scroll" style="display: flex; gap: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; padding-bottom: 10px; transition-delay: 0.1s;">
+        <div class="admin-tabs" style="display: flex; gap: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 30px; padding-bottom: 10px; transition-delay: 0.1s;">
             <button class="tab-btn active" data-target="products-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--primary-color);">Manage Products</button>
             <button class="tab-btn" data-target="orders-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--text-muted);">New Orders</button>
             <button class="tab-btn" data-target="announcements-tab" style="background: none; border: none; font-size: 1.1rem; font-weight: 500; cursor: pointer; color: var(--text-muted);">Announcements</button>
         </div>
 
         <!-- Products Tab -->
-        <div id="products-tab" class="tab-content animate-on-scroll" style="transition-delay: 0.2s;">
+        <div id="products-tab" class="tab-content" style="transition-delay: 0.2s;">
             <h3>Add New Product</h3>
             <form id="add-product-form" style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="form-group">
@@ -116,7 +116,7 @@
         </div>
 
         <!-- Orders Tab -->
-        <div id="orders-tab" class="tab-content animate-on-scroll" style="display: none; transition-delay: 0.2s;">
+        <div id="orders-tab" class="tab-content" style="display: none; transition-delay: 0.2s;">
             <h3>New Orders</h3>
             <table class="products-table">
                 <thead>
@@ -136,7 +136,7 @@
         </div>
 
         <!-- Announcements Tab -->
-        <div id="announcements-tab" class="tab-content animate-on-scroll" style="display: none; transition-delay: 0.2s;">
+        <div id="announcements-tab" class="tab-content" style="display: none; transition-delay: 0.2s;">
             <h3>Create Announcement / Offer</h3>
             <form id="add-announcement-form" style="margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 20px;">
                 <div class="form-group">
