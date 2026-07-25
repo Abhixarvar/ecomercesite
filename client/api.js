@@ -26,7 +26,7 @@ export async function fetchApi(endpoint, options = {}) {
 
     try {
         if (window.showLoader && !options.hideLoader) {
-            window.showLoader(options.loaderText || 'Loading...');
+            window.showLoader(options.loaderText || 'Namaste,please wait...');
         }
         
         const res = await fetch(API_BASE + endpoint, {
