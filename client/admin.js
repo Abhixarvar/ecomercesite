@@ -116,8 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${p.title}</td>
                         <td>${p.category}</td>
                         <td>₹${p.price.toLocaleString()}</td>
-                        <td>${p.stock}</td>
                         <td>
+                            <input type="number" value="${p.stock}" min="0" id="stock-${p._id}" style="width: 70px; padding: 5px; border: 1px solid var(--border-color); border-radius: 4px;">
+                        </td>
+                        <td>
+                            <button class="update-stock-btn" data-id="${p._id}" style="background:var(--secondary-color); color:var(--text-dark); border:none; padding: 6px 12px; border-radius: 4px; cursor:pointer; margin-right: 8px; font-weight:500;">Update</button>
                             <button class="delete-btn" data-id="${p._id}"><i class="ph ph-trash"></i></button>
                         </td>
                     `;
@@ -131,6 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (confirm('Are you sure you want to delete this product?')) {
                             await deleteProduct(id);
                         }
+                    });
+                });
+
+                // Attach update stock listeners
+                document.querySelectorAll('.update-stock-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        const newStock = document.getElementById(`stock-${id}`).value;
+                        await updateStock(id, newStock);
                     });
                 });
             }
@@ -227,6 +239,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Error deleting product', err);
+        }
+    }
+
+    // Update Stock
+    async function updateStock(id, stock) {
+        try {
+            const data = await fetchApi(`/api/products/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ stock: Number(stock) }),
+                loaderText: 'Updating Stock...'
+            });
+            
+            if (data && data.success) {
+                loadProducts();
+                alert('Stock updated successfully');
+            } else {
+                alert(data?.message || 'Failed to update stock');
+            }
+        } catch (err) {
+            console.error('Error updating stock', err);
         }
     }
 

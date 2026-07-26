@@ -209,11 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                             btn.innerHTML = 'Out of Stock';
                                             
                                             const imgWrapper = productCard.querySelector('.product-image-wrapper');
-                                            if (imgWrapper && !imgWrapper.querySelector('.badge-new')) {
+                                            if (imgWrapper && !imgWrapper.querySelector('.out-of-stock-overlay')) {
                                                 const badge = document.createElement('div');
-                                                badge.className = 'product-badge badge-new';
-                                                badge.style.background = '#d9534f';
-                                                badge.innerText = 'Out of Stock';
+                                                badge.className = 'out-of-stock-overlay';
+                                                badge.innerHTML = '<span>OUT OF STOCK</span>';
                                                 imgWrapper.appendChild(badge);
                                             }
                                         }, 2000);
@@ -304,10 +303,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="product-card">
                             <div class="product-image-wrapper">
                                 <img src="${p.image}" alt="${p.title}" class="product-image">
-                                <div class="product-actions">
-                                    <button class="action-btn wishlist-btn" title="Add to Wishlist" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
+                                <div class="product-actions" style="z-index: 20;">
+                                    <button class="action-btn wishlist-btn" title="${outOfStock ? 'Notify me when restocked' : 'Add to Wishlist'}" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
                                 </div>
-                                ${outOfStock ? '<div class="product-badge badge-new" style="background:#d9534f">Out of Stock</div>' : ''}
+                                ${outOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
                                 <button class="add-to-cart-btn" ${outOfStock ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''} data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}">${outOfStock ? 'Out of Stock' : 'Add to Cart'}</button>
                             </div>
                             <div class="product-info">

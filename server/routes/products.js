@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
+const User = require('../models/User');
 const { authenticateAdmin } = require('../middleware/auth');
 const multer = require('multer');
 const sharp = require('sharp');
+const nodemailer = require('nodemailer');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -51,9 +53,43 @@ router.post('/', authenticateAdmin, upload.single('image'), async (req, res) => 
 // Update a product
 router.put('/:id', authenticateAdmin, async (req, res) => {
   try {
+    const oldProduct = await Product.findById(req.params.id);
     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    
+    // Check if stock was 0 and now is > 0
+    if (oldProduct && oldProduct.stock <= 0 && updated.stock > 0) {
+      // Find users who have this product in their wishlist
+      const users = await User.find({ "wishlist.id": req.params.id });
+      
+      if (users.length > 0) {
+        // Setup Ethereal Email transport
+        const testAccount = await nodemailer.createTestAccount();
+        const transporter = nodemailer.createTransport({
+          host: "smtp.ethereal.email",
+          port: 587,
+          secure: false,
+          auth: {
+            user: testAccount.user,
+            pass: testAccount.pass,
+          },
+        });
+
+        const emails = users.map(u => u.email).join(', ');
+        const info = await transporter.sendMail({
+          from: '"Archi Fashion" <noreply@archifashion.com>',
+          to: emails,
+          subject: `Restock Alert: ${updated.title} is back!`,
+          text: `Good news! ${updated.title} is back in stock. Visit our store to purchase it now.`,
+          html: `<b>Good news!</b> <p>${updated.title} is back in stock. Visit our store to purchase it now.</p>`
+        });
+        
+        console.log("Restock email sent. Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      }
+    }
+
     res.json({ success: true, product: updated });
   } catch (err) {
+    console.error('Error updating product:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
