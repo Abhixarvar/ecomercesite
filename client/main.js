@@ -504,6 +504,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('A network error occurred.');
             }
         });
+    }
+
     // --- Chatbot Logic ---
     const chatbotHTML = `
         <div class="chatbot-container">
