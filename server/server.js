@@ -8,6 +8,7 @@ const userRoutes = require('./routes/user');
 const productRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
 const announcementRoutes = require('./routes/announcements');
+const chatbotRoutes = require('./routes/chatbot');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +29,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/chatbot', chatbotRoutes);
 
 // Start server
 app.listen(PORT, () => {
