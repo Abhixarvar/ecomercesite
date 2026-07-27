@@ -13,8 +13,8 @@
     --border-color: #e5e5e5;
     
     /* Typography */
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Outfit', sans-serif;
+    --font-heading: 'Dancing Script', cursive;
+    --font-body: 'Quicksand', sans-serif;
     
     /* Shadows & Transitions */
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
@@ -978,12 +978,12 @@ img {
     --bg-white: #121212; 
     --border-color: #333333;
     
-    --primary-color: #f7556f; /* Lighter maroon/crimson for contrast */
-    --primary-hover: #ff758c;
+    --primary-color: #D4AF37; /* Metallic Gold */
+    --primary-hover: #F3E5AB; /* Lighter Gold */
     
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.7);
-    --shadow-lg: 0 12px 24px rgba(247, 85, 111, 0.15);
+    --shadow-lg: 0 12px 24px rgba(212, 175, 55, 0.15);
 }
 
 [data-theme="dark"] .navbar.scrolled,
