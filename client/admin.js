@@ -3,36 +3,19 @@ import { fetchApi } from './api.js';
 document.addEventListener('DOMContentLoaded', () => {
     const authOverlay = document.getElementById('auth-overlay');
 
-    // --- Theme Toggle ---
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (themeToggleBtn) {
-        const themeIcon = themeToggleBtn.querySelector('i');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const defaultTheme = systemPrefersDark ? 'dark' : 'light';
-        const currentTheme = localStorage.getItem('theme') || defaultTheme;
-        
-        if (currentTheme === 'dark') {
+    // --- Theme Logic (System Preference Only) ---
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    function applySystemTheme(e) {
+        if (e.matches) {
             document.documentElement.setAttribute('data-theme', 'dark');
-            if (themeIcon) themeIcon.classList.replace('ph-moon', 'ph-sun');
         } else {
             document.documentElement.removeAttribute('data-theme');
-            if (themeIcon) themeIcon.classList.replace('ph-sun', 'ph-moon');
         }
-
-        themeToggleBtn.addEventListener('click', () => {
-            const currentIcon = themeToggleBtn.querySelector('i, svg');
-            let theme = document.documentElement.getAttribute('data-theme');
-            if (theme === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                if (currentIcon) currentIcon.classList.replace('ph-sun', 'ph-moon');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                if (currentIcon) currentIcon.classList.replace('ph-moon', 'ph-sun');
-            }
-        });
     }
+    
+    applySystemTheme(mediaQuery);
+    mediaQuery.addEventListener('change', applySystemTheme);
     const adminDashboard = document.getElementById('admin-dashboard');
     const authTitle = document.getElementById('auth-title');
     const authMessage = document.getElementById('auth-message');
