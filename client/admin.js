@@ -13,22 +13,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (currentTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            themeIcon.classList.replace('ph-moon', 'ph-sun');
+            if (themeIcon) themeIcon.classList.replace('ph-moon', 'ph-sun');
         } else {
             document.documentElement.removeAttribute('data-theme');
-            themeIcon.classList.replace('ph-sun', 'ph-moon');
+            if (themeIcon) themeIcon.classList.replace('ph-sun', 'ph-moon');
         }
 
         themeToggleBtn.addEventListener('click', () => {
+            const currentIcon = themeToggleBtn.querySelector('i, svg');
             let theme = document.documentElement.getAttribute('data-theme');
             if (theme === 'dark') {
                 document.documentElement.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
-                themeIcon.classList.replace('ph-sun', 'ph-moon');
+                if (currentIcon) currentIcon.classList.replace('ph-sun', 'ph-moon');
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
-                themeIcon.classList.replace('ph-moon', 'ph-sun');
+                if (currentIcon) currentIcon.classList.replace('ph-moon', 'ph-sun');
             }
         });
     }
