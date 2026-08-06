@@ -226,7 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                alert(data?.message || 'Action failed');
+                if (data?.message === 'Invalid token' || data?.message === 'Access denied') {
+                    document.getElementById('login-modal')?.classList.remove('hidden');
+                } else {
+                    alert(data?.message || 'Action failed');
+                }
             }
         } catch (error) {
             btn.innerHTML = originalText;
@@ -277,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dynamicProducts.innerHTML = skeletons;
 
         try {
-            const data = await fetchApi('/api/products');
+            const data = await fetchApi('/api/products', { hideLoader: true });
             
             if (data && data.success && data.products.length > 0) {
                 dynamicProducts.innerHTML = '';
@@ -389,6 +393,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             btn.style.color = 'white';
                         }
                     });
+                } else {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('authUser');
+                    if (loginBtn) loginBtn.classList.remove('hidden');
+                    if (userProfile) userProfile.classList.add('hidden');
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) cartBadge.innerText = '0';
                 }
             } catch (err) {
                 console.error(err);

@@ -35,6 +35,12 @@ export async function fetchApi(endpoint, options = {}) {
         });
         
         const data = await res.json();
+        
+        if (res.status === 401 || res.status === 403 || (data && (data.message === 'Invalid token' || data.message === 'Access denied'))) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+        }
+
         return data;
     } catch (e) {
         console.error('API Error:', e);
