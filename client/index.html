@@ -71,22 +71,30 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section / Slideshow -->
     <header class="hero" id="hero">
-        <div class="hero-image-container">
-            <img src="./assets/images/hero.png" alt="Elegant Indian Bridal Lehenga" class="hero-image">
-            <div class="hero-overlay"></div>
-        </div>
-        
-        <div class="hero-content">
-            <p class="hero-subtitle">THE FESTIVE COLLECTION</p>
-            <h2 class="hero-title">Elegance in<br>Every Thread</h2>
-            <p class="hero-description">Discover our new collection of handcrafted ethnic wear, blending timeless traditions with modern silhouettes.</p>
-            <div class="hero-cta">
-                <a href="#collection" class="btn btn-primary">Shop Collection</a>
-                <a href="#about" class="btn btn-secondary">Explore Our Story</a>
+        <div class="hero-slides-wrapper" id="hero-slides-wrapper">
+            <!-- Dynamic slides rendered by main.js, default single slide fallback -->
+            <div class="hero-slide active">
+                <div class="hero-image-container">
+                    <img src="./assets/images/hero.png" alt="Elegant Indian Ethnic Wear" class="hero-image">
+                    <div class="hero-overlay"></div>
+                </div>
+                <div class="hero-content">
+                    <p class="hero-subtitle">THE FESTIVE COLLECTION</p>
+                    <h2 class="hero-title">Elegance in<br>Every Thread</h2>
+                    <p class="hero-description">Discover our new collection of handcrafted ethnic wear, blending timeless traditions with modern silhouettes.</p>
+                    <div class="hero-cta">
+                        <a href="#collection" class="btn btn-primary">Shop Collection</a>
+                    </div>
+                </div>
             </div>
         </div>
+        
+        <!-- Slideshow Controls -->
+        <button class="hero-arrow prev" id="hero-prev" aria-label="Previous Slide"><i class="ph ph-caret-left"></i></button>
+        <button class="hero-arrow next" id="hero-next" aria-label="Next Slide"><i class="ph ph-caret-right"></i></button>
+        <div class="hero-dots" id="hero-dots"></div>
     </header>
 
     <!-- Categories Section -->
@@ -133,6 +141,9 @@
             </div>
         </div>
     </section>
+
+    <!-- Curated Product Collections (Dynamically populated from Admin) -->
+    <div id="curated-collections"></div>
 
     <!-- Featured Products Section -->
     <section class="featured-products section bg-light" id="collection">

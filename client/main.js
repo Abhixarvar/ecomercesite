@@ -321,6 +321,176 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize
     attachProductListeners();
     loadProducts();
+    loadHeroBanners();
+    loadCuratedCollections();
+
+    async function loadHeroBanners() {
+        const slidesWrapper = document.getElementById('hero-slides-wrapper');
+        const dotsContainer = document.getElementById('hero-dots');
+        const prevBtn = document.getElementById('hero-prev');
+        const nextBtn = document.getElementById('hero-next');
+        const heroEl = document.getElementById('hero');
+
+        if (!slidesWrapper) return;
+
+        try {
+            const data = await fetchApi('/api/banners', { hideLoader: true });
+            if (data && data.success && data.banners && data.banners.length > 0) {
+                slidesWrapper.innerHTML = '';
+                if (dotsContainer) dotsContainer.innerHTML = '';
+
+                const banners = data.banners;
+                let currentSlideIndex = 0;
+                let slideInterval = null;
+
+                banners.forEach((b, index) => {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = `hero-slide ${index === 0 ? 'active' : ''}`;
+                    
+                    const titleHtml = b.title ? `<h2 class="hero-title">${b.title.replace('\n', '<br>')}</h2>` : '<h2 class="hero-title">Elegance in<br>Every Thread</h2>';
+                    const subtitleHtml = b.subtitle ? `<p class="hero-subtitle">${b.subtitle}</p>` : '';
+                    const btnText = b.buttonText || 'Shop Collection';
+                    const linkUrl = b.linkUrl || '#collection';
+
+                    slideDiv.innerHTML = `
+                        <div class="hero-image-container">
+                            <img src="${b.image}" alt="${b.title || 'Banner Slide'}" class="hero-image">
+                            <div class="hero-overlay"></div>
+                        </div>
+                        <div class="hero-content">
+                            ${subtitleHtml}
+                            ${titleHtml}
+                            <div class="hero-cta" style="margin-top: 20px;">
+                                <a href="${linkUrl}" class="btn btn-primary">${btnText}</a>
+                            </div>
+                        </div>
+                    `;
+                    slidesWrapper.appendChild(slideDiv);
+
+                    if (dotsContainer && banners.length > 1) {
+                        const dot = document.createElement('div');
+                        dot.className = `hero-dot ${index === 0 ? 'active' : ''}`;
+                        dot.dataset.index = index;
+                        dot.addEventListener('click', () => goToSlide(index));
+                        dotsContainer.appendChild(dot);
+                    }
+                });
+
+                if (banners.length <= 1) {
+                    if (prevBtn) prevBtn.style.display = 'none';
+                    if (nextBtn) nextBtn.style.display = 'none';
+                    if (dotsContainer) dotsContainer.style.display = 'none';
+                    return;
+                } else {
+                    if (prevBtn) prevBtn.style.display = 'flex';
+                    if (nextBtn) nextBtn.style.display = 'flex';
+                    if (dotsContainer) dotsContainer.style.display = 'flex';
+                }
+
+                function goToSlide(index) {
+                    const slides = slidesWrapper.querySelectorAll('.hero-slide');
+                    const dots = dotsContainer ? dotsContainer.querySelectorAll('.hero-dot') : [];
+
+                    slides.forEach(s => s.classList.remove('active'));
+                    dots.forEach(d => d.classList.remove('active'));
+
+                    currentSlideIndex = (index + slides.length) % slides.length;
+                    slides[currentSlideIndex].classList.add('active');
+                    if (dots[currentSlideIndex]) dots[currentSlideIndex].classList.add('active');
+                }
+
+                function startTimer() {
+                    stopTimer();
+                    slideInterval = setInterval(() => {
+                        goToSlide(currentSlideIndex + 1);
+                    }, 5000);
+                }
+
+                function stopTimer() {
+                    if (slideInterval) clearInterval(slideInterval);
+                }
+
+                if (prevBtn) prevBtn.addEventListener('click', () => { goToSlide(currentSlideIndex - 1); startTimer(); });
+                if (nextBtn) nextBtn.addEventListener('click', () => { goToSlide(currentSlideIndex + 1); startTimer(); });
+
+                if (heroEl) {
+                    heroEl.addEventListener('mouseenter', stopTimer);
+                    heroEl.addEventListener('mouseleave', startTimer);
+                }
+
+                startTimer();
+            }
+        } catch (err) {
+            console.error('Error loading hero banners:', err);
+        }
+    }
+
+    async function loadCuratedCollections() {
+        const container = document.getElementById('curated-collections');
+        if (!container) return;
+
+        try {
+            const data = await fetchApi('/api/product-lists', { hideLoader: true });
+            if (data && data.success && data.lists && data.lists.length > 0) {
+                container.innerHTML = '';
+
+                data.lists.forEach(list => {
+                    if (!list.products || list.products.length === 0) return;
+
+                    const section = document.createElement('section');
+                    section.className = 'featured-products section bg-light';
+                    section.style.borderTop = '1px solid var(--border-color)';
+
+                    const badgeHtml = list.badgeText ? `<span class="chip-badge" style="font-size:0.85rem; padding: 4px 12px; margin-bottom: 10px; display:inline-block;">${list.badgeText}</span>` : '';
+                    const descHtml = list.description ? `<p class="section-subtitle">${list.description}</p>` : '';
+
+                    let productsHtml = '';
+                    list.products.forEach(p => {
+                        const outOfStock = p.stock <= 0;
+                        productsHtml += `
+                            <div class="product-card">
+                                <div class="product-image-wrapper">
+                                    <img src="${p.image}" alt="${p.title}" class="product-image">
+                                    <div class="product-actions" style="z-index: 20;">
+                                        <button class="action-btn wishlist-btn" title="${outOfStock ? 'Notify me when restocked' : 'Add to Wishlist'}" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
+                                    </div>
+                                    ${outOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
+                                    <button class="add-to-cart-btn" ${outOfStock ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''} data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}">${outOfStock ? 'Out of Stock' : 'Add to Cart'}</button>
+                                </div>
+                                <div class="product-info">
+                                    <span class="product-category">${p.category}</span>
+                                    <h3 class="product-title">${p.title}</h3>
+                                    <div class="product-price">₹${p.price.toLocaleString()}</div>
+                                    <div class="product-stock" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Stock: ${p.stock}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    section.innerHTML = `
+                        <div class="container">
+                            <div class="section-header animate-on-scroll" style="text-align: center;">
+                                ${badgeHtml}
+                                <h2>${list.title}</h2>
+                                <div class="section-divider"></div>
+                                ${descHtml}
+                            </div>
+                            <div class="product-grid animate-on-scroll">
+                                ${productsHtml}
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(section);
+                });
+
+                attachProductListeners();
+                if (window.observeElements) window.observeElements();
+            }
+        } catch (err) {
+            console.error('Error loading curated collections:', err);
+        }
+    }
     
     // Check for active announcement
     async function checkAnnouncement() {

@@ -9,6 +9,8 @@ const productRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
 const announcementRoutes = require('./routes/announcements');
 const chatbotRoutes = require('./routes/chatbot');
+const bannerRoutes = require('./routes/banners');
+const productListRoutes = require('./routes/productLists');
 
 const connectDB = require('./db');
 
@@ -40,6 +42,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/banners', bannerRoutes);
+app.use('/api/product-lists', productListRoutes);
 
 // Start server locally if executed directly
 if (require.main === module) {
