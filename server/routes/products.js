@@ -3,18 +3,24 @@ const router = express.Router();
 const Product = require('../models/Product');
 const User = require('../models/User');
 const { authenticateAdmin } = require('../middleware/auth');
-const multer = require('multer');
+const upload = require('../middleware/upload');
 const sharp = require('sharp');
 const nodemailer = require('nodemailer');
 
-const upload = multer({ storage: multer.memoryStorage() });
+// Fisher-Yates shuffle for unbiased randomization
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 // Get all products
 router.get('/', async (req, res) => {
   try {
     let products = await Product.find({});
-    // Shuffle array randomly
-    products = products.sort(() => 0.5 - Math.random());
+    products = shuffleArray(products);
     res.json({ success: true, products });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });

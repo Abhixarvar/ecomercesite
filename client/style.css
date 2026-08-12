@@ -43,6 +43,8 @@ body {
     background-color: var(--bg-white);
     line-height: 1.6;
     overflow-x: hidden;
+    opacity: 1;
+    transition: opacity 0.4s ease;
 }
 
 /* Typography Utility */
@@ -95,6 +97,8 @@ img {
     transition: var(--transition);
     text-align: center;
     border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
@@ -522,27 +526,6 @@ img {
 .action-btn.active {
     background-color: var(--primary-color);
     color: var(--bg-white);
-}
-
-.product-badge {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.badge-new {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.badge-bestseller {
-    background-color: var(--secondary-color);
-    color: var(--text-dark);
 }
 
 .out-of-stock-overlay {
@@ -995,21 +978,6 @@ img {
     background-color: var(--bg-white);
 }
 
-.theme-toggle {
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-right: 15px;
-    display: flex;
-    align-items: center;
-    transition: var(--transition);
-}
-.theme-toggle:hover {
-    color: var(--primary-color);
-}
-
 /* --- Global Loader --- */
 .loader-content {
     display: flex;
@@ -1048,15 +1016,7 @@ img {
     50% { opacity: 0.5; }
 }
 
-/* --- Page Transitions --- */
-body.page-transitioning {
-    opacity: 0 !important;
-    pointer-events: none;
-}
-body {
-    opacity: 1;
-    transition: opacity 0.4s ease;
-}
+
 
 /* --- Scroll Animations --- */
 .animate-on-scroll {
@@ -1117,11 +1077,13 @@ body {
     background: #2c2c2c;
 }
 
-/* --- Micro-interactions (Enhancements) --- */
-.btn {
-    position: relative;
-    overflow: hidden;
+/* --- Page Transitions --- */
+body.page-transitioning {
+    opacity: 0 !important;
+    pointer-events: none;
 }
+
+/* --- Micro-interactions (Button Ripple) --- */
 .btn::after {
     content: '';
     position: absolute;

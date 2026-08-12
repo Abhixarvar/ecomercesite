@@ -566,6 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (data && data.success) {
+                    const wasEditing = !!editingListId;
                     listForm.reset();
                     selectedProductIds = [];
                     editingListId = null;
@@ -573,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (submitBtn) submitBtn.innerHTML = '<i class="ph ph-floppy-disk"></i> Save Product List';
                     updateSelectedSummaryUI();
                     loadLists();
-                    alert(editingListId ? 'List updated successfully!' : 'Curated collection list created successfully!');
+                    alert(wasEditing ? 'List updated successfully!' : 'Curated collection list created successfully!');
                 } else {
                     alert(data?.message || 'Failed to save list');
                 }

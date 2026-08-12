@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span style="color: var(--text-light); font-size: 0.9rem;">${new Date(order.date).toLocaleDateString()}</span>
                     </div>
                     <div style="font-weight: 600; font-size: 1.2rem; color: var(--primary-color);">
-                        $${order.total.toFixed(2)}
+                        ₹${order.total.toLocaleString()}
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
@@ -131,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('cart-items');
         if (!data || !data.success || data.cart.length === 0) {
             container.innerHTML = '<p>Your cart is empty.</p>';
-            document.getElementById('cart-subtotal').innerText = '$0.00';
-            document.getElementById('cart-total').innerText = '$0.00';
+            document.getElementById('cart-subtotal').innerText = '₹0';
+            document.getElementById('cart-total').innerText = '₹0';
             document.getElementById('checkout-btn').disabled = true;
             const whatsappBtn = document.getElementById('whatsapp-share-btn');
             if (whatsappBtn) whatsappBtn.disabled = true;
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let total = 0;
         container.innerHTML = data.cart.map(item => {
-            const priceNum = parseFloat(item.price.replace(/[^0-9.-]+/g,"")) || 0;
+            const priceNum = Number(item.price) || 0;
             total += priceNum;
             return `
             <div class="cart-item" style="display: flex; align-items: center; border-bottom: 1px solid var(--border-color); padding: 20px 0;">
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="flex-grow: 1;">
                     <h4 style="margin: 0; font-family: var(--font-heading); font-size: 1.2rem;">${item.title}</h4>
                     <p style="margin: 5px 0; color: var(--text-light);">${item.category}</p>
-                    <strong style="font-size: 1.1rem;">${item.price}</strong>
+                    <strong style="font-size: 1.1rem;">₹${priceNum.toLocaleString()}</strong>
                 </div>
                 <button class="remove-cart-btn" data-id="${item.id}" style="background: none; border: none; cursor: pointer; color: var(--primary-color); padding: 10px; transition: var(--transition);">
                     <i class="ph ph-trash" style="font-size: 1.5rem;"></i>
@@ -163,8 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;}).join('');
 
-        document.getElementById('cart-subtotal').innerText = '$' + total.toFixed(2);
-        document.getElementById('cart-total').innerText = '$' + total.toFixed(2);
+        document.getElementById('cart-subtotal').innerText = '₹' + total.toLocaleString();
+        document.getElementById('cart-total').innerText = '₹' + total.toLocaleString();
 
         document.querySelectorAll('.remove-cart-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -239,12 +239,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let total = 0;
             
             currentCartData.forEach((item, index) => {
-                message += `${index + 1}. ${item.title} - ${item.price}\n`;
-                const priceNum = parseFloat(item.price.replace(/[^0-9.-]+/g,"")) || 0;
+                const priceNum = Number(item.price) || 0;
+                message += `${index + 1}. ${item.title} - ₹${priceNum.toLocaleString()}\n`;
                 total += priceNum;
             });
             
-            message += `\nTotal: $${total.toFixed(2)}`;
+            message += `\nTotal: ₹${total.toLocaleString()}`;
             
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/918920530771?text=${encodedMessage}`;

@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Banner = require('../models/Banner');
 const { authenticateAdmin } = require('../middleware/auth');
-const multer = require('multer');
+const upload = require('../middleware/upload');
 const sharp = require('sharp');
-
-const upload = multer({ storage: multer.memoryStorage() });
 
 // Public: Get all active banners (for landing page slideshow)
 router.get('/', async (req, res) => {

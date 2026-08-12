@@ -128,7 +128,7 @@ router.post('/checkout', authenticateToken, async (req, res) => {
       orderId: 'ORD-' + Math.floor(Math.random() * 1000000),
       date: new Date(),
       items: user.cart,
-      total: user.cart.reduce((sum, item) => sum + (parseFloat(item.price.toString().replace(/[^0-9.-]+/g,"")) || 0), 0),
+      total: user.cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0),
       address: address,
       phone: phone
     };

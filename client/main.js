@@ -207,15 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                const isOutOfStock = btn.innerText === 'Out of Stock' || btn.innerHTML === 'Out of Stock';
-                
                 btn.innerHTML = successText;
                 btn.style.backgroundColor = 'var(--accent-color)';
                 btn.style.color = 'white';
                 
-                if (endpoint === '/api/user/cart' && !isOutOfStock) {
+                if (endpoint === '/api/user/cart') {
                     btn.disabled = false;
-                } else if (!isOutOfStock) {
+                } else {
                     setTimeout(() => {
                         btn.innerHTML = originalText;
                         btn.style.backgroundColor = '';
@@ -260,6 +258,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Shared product card HTML generator — used by loadProducts and loadCuratedCollections
+    function renderProductCardHTML(p) {
+        const outOfStock = p.stock <= 0;
+        return `
+            <div class="product-card">
+                <div class="product-image-wrapper">
+                    <img src="${p.image}" alt="${p.title}" class="product-image">
+                    <div class="product-actions" style="z-index: 20;">
+                        <button class="action-btn wishlist-btn" title="${outOfStock ? 'Notify me when restocked' : 'Add to Wishlist'}" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
+                    </div>
+                    ${outOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
+                    <button class="add-to-cart-btn" ${outOfStock ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''} data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}">${outOfStock ? 'Out of Stock' : 'Add to Cart'}</button>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">${p.category}</span>
+                    <h3 class="product-title">${p.title}</h3>
+                    <div class="product-price">₹${p.price.toLocaleString()}</div>
+                    <div class="product-stock" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Stock: ${p.stock}</div>
+                </div>
+            </div>
+        `;
+    }
+
     async function loadProducts() {
         const dynamicProducts = document.getElementById('dynamic-products');
         if (!dynamicProducts) return;
@@ -284,31 +305,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await fetchApi('/api/products', { hideLoader: true });
             
             if (data && data.success && data.products.length > 0) {
-                dynamicProducts.innerHTML = '';
-                data.products.forEach(p => {
-                    const outOfStock = p.stock <= 0;
-                    dynamicProducts.innerHTML += `
-                        <div class="product-card">
-                            <div class="product-image-wrapper">
-                                <img src="${p.image}" alt="${p.title}" class="product-image">
-                                <div class="product-actions" style="z-index: 20;">
-                                    <button class="action-btn wishlist-btn" title="${outOfStock ? 'Notify me when restocked' : 'Add to Wishlist'}" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
-                                </div>
-                                ${outOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
-                                <button class="add-to-cart-btn" ${outOfStock ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''} data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}">${outOfStock ? 'Out of Stock' : 'Add to Cart'}</button>
-                            </div>
-                            <div class="product-info">
-                                <span class="product-category">${p.category}</span>
-                                <h3 class="product-title">${p.title}</h3>
-                                <div class="product-price">₹${p.price.toLocaleString()}</div>
-                                <div class="product-stock" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Stock: ${p.stock}</div>
-                            </div>
-                        </div>
-                    `;
-                });
+                dynamicProducts.innerHTML = data.products.map(renderProductCardHTML).join('');
 
                 attachProductListeners();
-                window.observeElements(); // Re-observe new elements
+                window.observeElements();
             } else {
                 dynamicProducts.innerHTML = '<p style="grid-column:1/-1; text-align:center;">No products available at the moment.</p>';
             }
@@ -319,7 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initialize
-    attachProductListeners();
     loadProducts();
     loadHeroBanners();
     loadCuratedCollections();
@@ -444,28 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const badgeHtml = list.badgeText ? `<span class="chip-badge" style="font-size:0.85rem; padding: 4px 12px; margin-bottom: 10px; display:inline-block;">${list.badgeText}</span>` : '';
                     const descHtml = list.description ? `<p class="section-subtitle">${list.description}</p>` : '';
 
-                    let productsHtml = '';
-                    list.products.forEach(p => {
-                        const outOfStock = p.stock <= 0;
-                        productsHtml += `
-                            <div class="product-card">
-                                <div class="product-image-wrapper">
-                                    <img src="${p.image}" alt="${p.title}" class="product-image">
-                                    <div class="product-actions" style="z-index: 20;">
-                                        <button class="action-btn wishlist-btn" title="${outOfStock ? 'Notify me when restocked' : 'Add to Wishlist'}" data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}"><i class="ph ph-heart"></i></button>
-                                    </div>
-                                    ${outOfStock ? '<div class="out-of-stock-overlay"><span>OUT OF STOCK</span></div>' : ''}
-                                    <button class="add-to-cart-btn" ${outOfStock ? 'disabled style="background:#ccc; cursor:not-allowed;"' : ''} data-id="${p._id}" data-title="${p.title}" data-price="${p.price}" data-image="${p.image}" data-category="${p.category}">${outOfStock ? 'Out of Stock' : 'Add to Cart'}</button>
-                                </div>
-                                <div class="product-info">
-                                    <span class="product-category">${p.category}</span>
-                                    <h3 class="product-title">${p.title}</h3>
-                                    <div class="product-price">₹${p.price.toLocaleString()}</div>
-                                    <div class="product-stock" style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Stock: ${p.stock}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
+                    const productsHtml = list.products.map(renderProductCardHTML).join('');
 
                     section.innerHTML = `
                         <div class="container">
