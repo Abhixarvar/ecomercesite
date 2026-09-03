@@ -92,7 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                // observer.unobserve(entry.target); // keep observing if we want it to hide/show, but usually we just animate once.
+            } else {
+                entry.target.classList.remove('visible');
             }
         });
     }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
