@@ -824,6 +824,45 @@ img {
     }
 }
 
+@media (max-width: 480px) {
+    .section {
+        padding: 40px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 30px;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    
+    .hero-description {
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+    }
+    
+    .nav-container {
+        padding: 0 16px;
+    }
+    
+    .category-card {
+        height: 280px;
+    }
+    
+    .hero-content {
+        margin-top: 10px;
+    }
+    
+    .footer {
+        padding: 50px 0 20px;
+    }
+}
+
 /* --- User Profile & Auth --- */
 .user-profile {
     display: flex;
@@ -890,6 +929,8 @@ img {
 .modal.hidden {
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
+    display: flex !important;
 }
 
 .modal-content {
