@@ -51,3 +51,5 @@ export async function fetchApi(endpoint, options = {}) {
         }
     }
 }
+
+window.fetchApi = fetchApi;

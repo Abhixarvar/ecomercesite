@@ -1,4 +1,4 @@
-import { fetchApi } from './api.js';
+import { fetchApi } from './apiClient.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const authOverlay = document.getElementById('auth-overlay');

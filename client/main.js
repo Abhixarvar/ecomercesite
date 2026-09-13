@@ -1,8 +1,12 @@
-import { fetchApi } from './api.js';
-import Toastify from 'toastify-js';
+import { fetchApi } from './apiClient.js';
+let Toastify;
+import('toastify-js').then(module => {
+    Toastify = module.default || module;
+});
 import "toastify-js/src/toastify.css";
 
-document.addEventListener('DOMContentLoaded', () => {
+const init = () => {
+    console.log("INIT WAS CALLED SUCCESSFULLY");
     // --- Global Loader ---
     const loaderOverlay = document.createElement('div');
     loaderOverlay.id = 'global-loader';
@@ -96,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 entry.target.classList.remove('visible');
             }
         });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px 50px 0px' });
 
     // Expose globally so other scripts can use it
     window.observeElements = () => {
@@ -306,8 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await fetchApi('/api/products', { hideLoader: true });
             
             if (data && data.success && data.products.length > 0) {
-                dynamicProducts.innerHTML = data.products.map(renderProductCardHTML).join('');
-
+                const htmlStr = data.products.map(renderProductCardHTML).join('');
+                console.log("RENDERED HTML LENGTH:", htmlStr.length);
+                dynamicProducts.innerHTML = htmlStr;
+                
                 attachProductListeners();
                 window.observeElements();
             } else {
@@ -750,4 +756,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chatbotInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleChat();
     });
-});
+};
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
