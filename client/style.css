@@ -1163,6 +1163,7 @@ body.page-transitioning {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    pointer-events: none;
 }
 
 .chatbot-toggle {
@@ -1179,6 +1180,7 @@ body.page-transitioning {
     box-shadow: var(--shadow-lg);
     border: none;
     transition: var(--transition);
+    pointer-events: auto;
 }
 .chatbot-toggle:hover {
     transform: scale(1.1);
