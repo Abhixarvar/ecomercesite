@@ -1121,7 +1121,7 @@ img {
 /* --- Page Transitions --- */
 body.page-transitioning {
     opacity: 0 !important;
-    pointer-events: none;
+    transition: opacity 0.2s ease-out;
 }
 
 /* --- Micro-interactions (Button Ripple) --- */

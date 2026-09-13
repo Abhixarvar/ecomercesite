@@ -114,17 +114,22 @@ const init = () => {
     window.observeElements();
 
     // --- Page Transitions ---
+    // Clean up transition state on page show (handles bfcache restore)
+    window.addEventListener('pageshow', (e) => {
+        document.body.classList.remove('page-transitioning');
+        // Also hide the loader overlay in case it was left visible
+        const loader = document.getElementById('global-loader');
+        if (loader) loader.classList.add('hidden');
+    });
+
     document.addEventListener('click', (e) => {
         const anchor = e.target.closest('a');
         if (!anchor) return;
         
         const href = anchor.getAttribute('href');
         if (href && !href.startsWith('#') && !href.startsWith('http') && anchor.target !== '_blank') {
-            e.preventDefault();
+            // Just add the visual transition — don't prevent default navigation
             document.body.classList.add('page-transitioning');
-            setTimeout(() => {
-                window.location.href = anchor.href;
-            }, 300);
         }
     });
 
