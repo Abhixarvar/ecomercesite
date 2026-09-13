@@ -577,6 +577,23 @@ const init = () => {
         loginBtn.addEventListener('click', (e) => {
             e.preventDefault();
             loginModal.classList.remove('hidden');
+            
+            // Initialize Google Login dynamically when modal opens
+            if (window.google && window.google.accounts && !window.googleLoginInitialized) {
+                const clientId = (import.meta && import.meta.env && import.meta.env.VITE_GOOGLE_CLIENT_ID) 
+                    ? import.meta.env.VITE_GOOGLE_CLIENT_ID 
+                    : "793576051211-qdgg0mbsld92ndoi6vmlmabksuob09sk.apps.googleusercontent.com";
+                
+                window.google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: window._actualGoogleLogin
+                });
+                window.google.accounts.id.renderButton(
+                    document.getElementById("google-login-btn-container"),
+                    { theme: "outline", size: "large", type: "standard" }
+                );
+                window.googleLoginInitialized = true;
+            }
         });
     }
 
