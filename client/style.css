@@ -850,6 +850,22 @@ img {
         padding: 0 16px;
     }
     
+    .nav-brand h1 {
+        font-size: 1.5rem;
+    }
+    
+    .nav-icons {
+        gap: 12px;
+    }
+    
+    .nav-icons a {
+        font-size: 1.3rem;
+    }
+
+    .modal-content {
+        padding: 30px 20px;
+    }
+    
     .category-card {
         height: 280px;
     }
