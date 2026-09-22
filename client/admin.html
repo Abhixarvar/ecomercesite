@@ -85,6 +85,7 @@
         .picker-item-info { flex: 1; overflow: hidden; }
         .picker-item-title { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .picker-item-sub { font-size: 0.78rem; color: var(--text-muted); }
+        .help-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; display: block; font-weight: 400; line-height: 1.3; }
 
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 3000; }
         .auth-box { background: var(--bg-white); padding: 40px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
@@ -161,10 +162,12 @@
                     <form id="add-product-form" class="form-grid">
                         <div class="form-group">
                             <label>Product Title</label>
+                            <span class="help-text">The name of the product as it will appear to customers.</span>
                             <input type="text" id="p-title" required placeholder="e.g. Royal Red Silk Saree">
                         </div>
                         <div class="form-group">
                             <label>Category</label>
+                            <span class="help-text">Select the department where this item belongs.</span>
                             <select id="p-category" required>
                                 <option value="Sarees">Sarees</option>
                                 <option value="Lehengas">Lehengas</option>
@@ -175,14 +178,17 @@
                         </div>
                         <div class="form-group">
                             <label>Price (₹)</label>
+                            <span class="help-text">Selling price in Indian Rupees. Do not use commas.</span>
                             <input type="number" id="p-price" required min="0" placeholder="e.g. 14999">
                         </div>
                         <div class="form-group">
                             <label>Stock Quantity</label>
+                            <span class="help-text">Number of items available. It will automatically show 'Out of Stock' when zero.</span>
                             <input type="number" id="p-stock" required min="0" placeholder="e.g. 15">
                         </div>
                         <div class="form-group" style="grid-column: 1 / -1;">
                             <label>Product Photo</label>
+                            <span class="help-text">Upload a clear image of the product. High-quality JPEGs or PNGs recommended.</span>
                             <input type="file" id="p-image" accept="image/*" required>
                         </div>
                         <div style="grid-column: 1 / -1;">
@@ -193,7 +199,10 @@
 
                 <div class="admin-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
-                        <h3 class="admin-card-title" style="margin-bottom:0; border:none; padding:0;"><i class="ph ph-list-dashes"></i> Current Inventory</h3>
+                        <div>
+                            <h3 class="admin-card-title" style="margin-bottom:5px; border:none; padding:0;"><i class="ph ph-list-dashes"></i> Current Inventory</h3>
+                            <span class="help-text">View all products, change their available stock instantly, or remove them from the store.</span>
+                        </div>
                         <div style="display: flex; gap: 10px; max-width: 400px; width: 100%;">
                             <input type="text" id="product-search-input" placeholder="Search product title..." style="padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%;">
                         </div>
@@ -227,26 +236,32 @@
                     <form id="add-banner-form" class="form-grid">
                         <div class="form-group">
                             <label>Banner Headline / Title (Optional)</label>
+                            <span class="help-text">The main large text displayed on the slide.</span>
                             <input type="text" id="b-title" placeholder="e.g. THE FESTIVE COLLECTION">
                         </div>
                         <div class="form-group">
                             <label>Sub-heading (Optional)</label>
+                            <span class="help-text">Smaller descriptive text shown below the main headline.</span>
                             <input type="text" id="b-subtitle" placeholder="e.g. Elegance in Every Thread">
                         </div>
                         <div class="form-group">
                             <label>CTA Button Text</label>
+                            <span class="help-text">The text shown on the clickable button.</span>
                             <input type="text" id="b-btntext" value="Shop Collection" placeholder="e.g. Shop Collection">
                         </div>
                         <div class="form-group">
                             <label>CTA Button Link</label>
+                            <span class="help-text">Where the button should redirect when clicked (e.g., #collection, /products).</span>
                             <input type="text" id="b-link" value="#collection" placeholder="e.g. #collection">
                         </div>
                         <div class="form-group">
                             <label>Slide Order Number</label>
+                            <span class="help-text">Determines the sequence of the slides. Lower numbers appear first.</span>
                             <input type="number" id="b-order" value="0" min="0" placeholder="0">
                         </div>
                         <div class="form-group">
                             <label>Banner Upload File</label>
+                            <span class="help-text">The wide background image for this slide. Recommended ratio 16:9.</span>
                             <input type="file" id="b-image" accept="image/*">
                         </div>
                         <div style="grid-column: 1 / -1;">
@@ -256,7 +271,10 @@
                 </div>
 
                 <div class="admin-card">
-                    <h3 class="admin-card-title"><i class="ph ph-cards"></i> Active Hero Banner Slides</h3>
+                    <div>
+                        <h3 class="admin-card-title" style="margin-bottom:5px; border:none; padding:0;"><i class="ph ph-cards"></i> Active Hero Banner Slides</h3>
+                        <span class="help-text" style="margin-bottom:20px;">Manage active slides. Use the toggle button (power icon) to hide a slide without deleting it.</span>
+                    </div>
                     <div class="table-responsive">
                         <table class="products-table">
                             <thead>
@@ -286,19 +304,23 @@
                     <form id="add-list-form" class="form-grid">
                         <div class="form-group">
                             <label>Collection Title *</label>
+                            <span class="help-text">The display name of the collection block on the storefront.</span>
                             <input type="text" id="l-title" required placeholder="e.g. Summer Silk Collection">
                         </div>
                         <div class="form-group">
                             <label>Badge Tagline (Optional)</label>
+                            <span class="help-text">A small highlighted tag shown above the title (e.g. 'FESTIVE SPECIAL').</span>
                             <input type="text" id="l-badge" placeholder="e.g. TRENDING NOW, HOT, FESTIVE">
                         </div>
                         <div class="form-group" style="grid-column: 1 / -1;">
                             <label>Description (Optional)</label>
+                            <span class="help-text">A short sentence describing what this collection contains.</span>
                             <input type="text" id="l-desc" placeholder="e.g. Handcrafted festive wear selected for this season.">
                         </div>
                         
                         <div class="form-group" style="grid-column: 1 / -1;">
                             <label>Selected Products</label>
+                            <span class="help-text">Choose the specific clothes from your inventory that belong to this list.</span>
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <button type="button" id="open-picker-btn" class="btn-outline-admin"><i class="ph ph-cursor-click"></i> Pick Clothes from Database (<span id="selected-products-count-badge">0</span> selected)</button>
                                 <span id="selected-items-names" style="font-size: 0.85rem; color: var(--text-muted);">No products selected yet</span>
@@ -335,7 +357,10 @@
             <!-- TAB 4: ORDERS OVERVIEW -->
             <div id="orders-tab" class="tab-content" style="display: none;">
                 <div class="admin-card">
-                    <h3 class="admin-card-title"><i class="ph ph-shopping-bag"></i> Customer Orders</h3>
+                    <div>
+                        <h3 class="admin-card-title" style="margin-bottom:5px; border:none; padding:0;"><i class="ph ph-shopping-bag"></i> Customer Orders</h3>
+                        <span class="help-text" style="margin-bottom:20px;">View all placed orders, customer details, and delivery addresses for processing and shipping.</span>
+                    </div>
                     <div class="table-responsive">
                         <table class="products-table">
                             <thead>
@@ -363,6 +388,7 @@
                     <form id="add-announcement-form" class="form-grid">
                         <div class="form-group" style="grid-column: 1 / -1;">
                             <label>Announcement Banner Message</label>
+                            <span class="help-text">Type the exact message you want customers to read. Keep it short and impactful.</span>
                             <input type="text" id="a-message" required placeholder="e.g. 🌟 Exclusive 20% OFF on all Sarees & Lehengas this Festive Season!">
                         </div>
                         <div>
