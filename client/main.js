@@ -113,25 +113,7 @@ const init = () => {
     // Initial call
     window.observeElements();
 
-    // --- Page Transitions ---
-    // Clean up transition state on page show (handles bfcache restore)
-    window.addEventListener('pageshow', (e) => {
-        document.body.classList.remove('page-transitioning');
-        // Also hide the loader overlay in case it was left visible
-        const loader = document.getElementById('global-loader');
-        if (loader) loader.classList.add('hidden');
-    });
-
-    document.addEventListener('click', (e) => {
-        const anchor = e.target.closest('a');
-        if (!anchor) return;
-        
-        const href = anchor.getAttribute('href');
-        if (href && !href.startsWith('#') && !href.startsWith('http') && anchor.target !== '_blank') {
-            // Just add the visual transition — don't prevent default navigation
-            document.body.classList.add('page-transitioning');
-        }
-    });
+    // --- Page Transitions logic removed ---
 
     window.globalCartIds = [];
     
@@ -482,36 +464,7 @@ const init = () => {
         }
     }
     
-    // Check for active announcement
-    async function checkAnnouncement() {
-        try {
-            const data = await fetchApi('/api/announcements/active', { hideLoader: true });
-            if (data && data.success && data.announcement) {
-                Toastify({
-                    text: data.announcement.message,
-                    duration: -1, // Do not auto-close
-                    close: true,
-                    gravity: "top",
-                    position: "center",
-                    style: {
-                        background: "var(--primary-color)",
-                        color: "white",
-                        marginTop: "70px",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                        fontFamily: "var(--font-heading)",
-                        fontSize: "1.1rem",
-                        padding: "15px 30px"
-                    },
-                    stopOnFocus: true
-                }).showToast();
-            }
-        } catch (error) {
-            console.error('Error fetching announcement:', error);
-        }
-    }
-    
-    checkAnnouncement();
+    // Announcement logic removed
 
     // --- Authentication & Modals ---
     const loginBtn = document.getElementById('login-btn');
@@ -678,106 +631,7 @@ const init = () => {
         });
     }
 
-    // --- Chatbot Logic ---
-    const chatbotHTML = `
-        <div class="chatbot-container">
-            <div class="chatbot-window" id="chatbot-window">
-                <div class="chatbot-header">
-                    <h3>Chat with us</h3>
-                    <button class="chatbot-close" id="chatbot-close">&times;</button>
-                </div>
-                <div class="chatbot-messages" id="chatbot-messages">
-                    <div class="chat-msg bot">Hi! I'm here to help you find the perfect outfit. What are you looking for?</div>
-                </div>
-                <div class="chatbot-input">
-                    <input type="text" id="chatbot-input" placeholder="Type here..." autocomplete="off">
-                    <button id="chatbot-send"><i class="ph-fill ph-paper-plane-right"></i></button>
-                </div>
-            </div>
-            <button class="chatbot-toggle" id="chatbot-toggle">
-                <i class="ph ph-chat-dots"></i>
-            </button>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', chatbotHTML);
-
-    const chatbotToggle = document.getElementById('chatbot-toggle');
-    const chatbotClose = document.getElementById('chatbot-close');
-    const chatbotWindow = document.getElementById('chatbot-window');
-    const chatbotInput = document.getElementById('chatbot-input');
-    const chatbotSend = document.getElementById('chatbot-send');
-    const chatbotMessages = document.getElementById('chatbot-messages');
-
-    function toggleChatbot() {
-        chatbotWindow.classList.toggle('open');
-        if(chatbotWindow.classList.contains('open')) {
-            chatbotInput.focus();
-        }
-    }
-
-    chatbotToggle.addEventListener('click', toggleChatbot);
-    chatbotClose.addEventListener('click', toggleChatbot);
-
-    function addMessage(text, sender, isHtml = false) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'chat-msg ' + sender;
-        if(isHtml) {
-            msgDiv.innerHTML = text;
-        } else {
-            msgDiv.innerText = text;
-        }
-        chatbotMessages.appendChild(msgDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
-
-    async function handleChat() {
-        const text = chatbotInput.value.trim();
-        if (!text) return;
-
-        addMessage(text, 'user');
-        chatbotInput.value = '';
-        chatbotInput.disabled = true;
-
-        try {
-            const data = await fetchApi('/api/chatbot', {
-                method: 'POST',
-                body: JSON.stringify({ message: text }),
-                hideLoader: true
-            });
-            
-            if (data && data.success) {
-                let htmlResponse = data.reply;
-                if (data.products && data.products.length > 0) {
-                    htmlResponse += '<div style="margin-top:10px;">';
-                    data.products.forEach(p => {
-                        htmlResponse += `
-                            <a href="/index.html#collection" class="chat-product-card" onclick="if(window.location.pathname.endsWith('index.html') || window.location.pathname === '/') { document.getElementById('collection').scrollIntoView({behavior: 'smooth'}); }">
-                                <img src="${p.image}" alt="${p.title}">
-                                <div class="chat-product-info">
-                                    <span class="chat-product-title">${p.title}</span>
-                                    <span class="chat-product-price">₹${p.price.toLocaleString()}</span>
-                                </div>
-                            </a>
-                        `;
-                    });
-                    htmlResponse += '</div>';
-                }
-                addMessage(htmlResponse, 'bot', true);
-            } else {
-                addMessage("Sorry, I'm having trouble connecting right now.", 'bot');
-            }
-        } catch (err) {
-            addMessage("Sorry, an error occurred.", 'bot');
-        } finally {
-            chatbotInput.disabled = false;
-            chatbotInput.focus();
-        }
-    }
-
-    chatbotSend.addEventListener('click', handleChat);
-    chatbotInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleChat();
-    });
+    // Chatbot logic removed
 };
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
