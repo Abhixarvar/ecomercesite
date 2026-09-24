@@ -43,8 +43,13 @@ body {
     background-color: var(--bg-white);
     line-height: 1.6;
     overflow-x: hidden;
-    opacity: 1;
-    transition: opacity 0.4s ease;
+    opacity: 0;
+    animation: fadeInPage 1s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes fadeInPage {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Typography Utility */
@@ -92,13 +97,33 @@ img {
     font-size: 0.95rem;
     font-weight: 500;
     letter-spacing: 0.5px;
-    border-radius: 2px;
+    border-radius: 4px; /* Slightly softer corners */
     cursor: pointer;
     transition: var(--transition);
     text-align: center;
     border: 1px solid transparent;
     position: relative;
     overflow: hidden;
+}
+
+/* Button Ripple Effect using active state */
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.25);
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    transition: transform 0.6s ease;
+    pointer-events: none;
+}
+
+.btn:active::after {
+    transform: translate(-50%, -50%) scale(1);
+    transition: transform 0s;
 }
 
 .btn-primary {
@@ -148,10 +173,12 @@ img {
 
 .navbar.scrolled,
 .navbar.solid {
-    background-color: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 15px 0;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .navbar.scrolled .nav-brand h1,
@@ -1427,3 +1454,14 @@ body.page-transitioning {
     border-color: var(--secondary-color);
 }
 
+/* --- Scroll Animations --- */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
