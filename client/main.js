@@ -554,6 +554,12 @@ const init = () => {
         closeLoginBtn.addEventListener('click', () => {
             loginModal.classList.add('hidden');
         });
+        
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                loginModal.classList.add('hidden');
+            }
+        });
     }
 
     if (logoutBtn) {

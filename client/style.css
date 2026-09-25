@@ -972,6 +972,7 @@ img {
 .modal.hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
     display: flex !important;
 }
 
