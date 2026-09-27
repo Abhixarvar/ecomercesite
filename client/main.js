@@ -7,6 +7,26 @@ import "toastify-js/src/toastify.css";
 
 const init = () => {
     console.log("INIT WAS CALLED SUCCESSFULLY");
+    
+    // --- Go To Top Button ---
+    const goToTopBtn = document.getElementById('go-to-top');
+    if (goToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                goToTopBtn.classList.remove('hidden');
+            } else {
+                goToTopBtn.classList.add('hidden');
+            }
+        });
+        
+        goToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
     // --- Global Loader ---
     const loaderOverlay = document.createElement('div');
     loaderOverlay.id = 'global-loader';
@@ -121,7 +141,63 @@ const init = () => {
     async function handleAddAction(btn, endpoint, successText) {
         const token = localStorage.getItem('authToken');
         if (!token) {
-            document.getElementById('login-modal').classList.remove('hidden');
+            const productId = btn.dataset.id;
+            const product = {
+                id: productId,
+                title: btn.dataset.title,
+                price: btn.dataset.price,
+                image: btn.dataset.image,
+                category: btn.dataset.category
+            };
+            
+            const storageKey = endpoint === '/api/user/cart' ? 'tempCart' : 'tempWishlist';
+            let tempStorage = JSON.parse(localStorage.getItem(storageKey) || '[]');
+            
+            if (!tempStorage.find(item => item.id === productId)) {
+                tempStorage.push(product);
+                localStorage.setItem(storageKey, JSON.stringify(tempStorage));
+                
+                if (endpoint === '/api/user/cart') {
+                    if (!window.globalCartIds.includes(productId)) {
+                        window.globalCartIds.push(productId);
+                    }
+                    const cartBadge = document.querySelector('.cart-badge');
+                    if (cartBadge) {
+                        cartBadge.innerText = tempStorage.length;
+                        cartBadge.classList.add('pop');
+                        setTimeout(() => cartBadge.classList.remove('pop'), 300);
+                    }
+                }
+                
+                if (Toastify) {
+                    Toastify({
+                        text: "your cart is temporrarily stored right now,sign in to save for further shopping",
+                        duration: 4000,
+                        gravity: "bottom",
+                        position: "center",
+                        style: {
+                            background: "var(--primary-color)",
+                            color: "white",
+                            borderRadius: "8px"
+                        }
+                    }).showToast();
+                }
+                
+                const originalText = btn.innerHTML;
+                btn.innerHTML = successText;
+                btn.style.backgroundColor = 'var(--accent-color)';
+                btn.style.color = 'white';
+                
+                if (endpoint !== '/api/user/cart') {
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.backgroundColor = '';
+                        btn.style.color = '';
+                    }, 2000);
+                }
+            } else if (endpoint === '/api/user/cart') {
+                window.location.href = './profile.html#cart';
+            }
             return;
         }
 
@@ -520,8 +596,19 @@ const init = () => {
         } else {
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (userProfile) userProfile.classList.add('hidden');
+            
+            const tempCart = JSON.parse(localStorage.getItem('tempCart') || '[]');
             const cartBadge = document.querySelector('.cart-badge');
-            if (cartBadge) cartBadge.innerText = '0';
+            if (cartBadge) cartBadge.innerText = tempCart.length.toString();
+            window.globalCartIds = tempCart.map(item => item.id);
+            
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                if (window.globalCartIds.includes(btn.dataset.id)) {
+                    btn.innerHTML = 'Added to Cart';
+                    btn.style.backgroundColor = 'var(--accent-color)';
+                    btn.style.color = 'white';
+                }
+            });
         }
     };
     checkAuthStatus();

@@ -1466,3 +1466,45 @@ body.page-transitioning {
     opacity: 1;
     transform: translateY(0);
 }
+
+/* --- Go To Top Button --- */
+.go-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 9999;
+    transition: var(--transition);
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.go-to-top.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+}
+
+.go-to-top:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-5px);
+}
+
+/* Show only on mobile/tablet view */
+@media (min-width: 769px) {
+    .go-to-top {
+        display: none !important;
+    }
+}
