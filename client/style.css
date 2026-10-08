@@ -795,6 +795,10 @@ img {
 }
 
 @media (max-width: 768px) {
+    html {
+        font-size: 18px; /* Increase base font size for mobile */
+    }
+
     .nav-links {
         position: fixed;
         top: 0;
